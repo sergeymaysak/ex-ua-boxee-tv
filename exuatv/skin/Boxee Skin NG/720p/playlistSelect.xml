@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<window type="dialog" id="14100">
+	<defaultcontrol>105</defaultcontrol>
+	<allowoverlay>no</allowoverlay>
+	<onload lang="python"><![CDATA[
+import mc
+import xbmc
+
+# external caller is responsible to prepare shared boxee video playlist
+# before show this dialog
+
+listId = 105
+winId = 14100
+labelId = 106
+
+videoPlaylist = mc.PlayList(mc.PlayList.PLAYLIST_VIDEO)
+videos = mc.ListItems()
+for i in range(videoPlaylist.Size()):
+	playlistItem = videoPlaylist.GetItem(i)
+	item = mc.ListItem(mc.ListItem.MEDIA_VIDEO_OTHER)
+	item.SetLabel(playlistItem.GetLabel())
+	item.SetPath(playlistItem.GetPath())
+	videos.append(item)
+mc.GetWindow(winId).GetList(listId).SetItems(videos)
+mc.GetWindow(winId).GetList(listId).SetFocusedItem(0)
+mc.GetWindow(winId).GetList(listId).SetSelected(0, True)
+mc.GetWindow(winId).GetLabel(labelId).SetLabel("Playlist: %s" % videoPlaylist.GetItem(0).GetTitle())
+
+mc.LogInfo("Select playlist window is loaded")
+]]>
+    </onload>
+	<controls>
+		<control type="image">
+			<width>1280</width>
+			<height>720</height>
+			<texture>white.png</texture>
+			<colordiffuse>DD202020</colordiffuse>
+		</control>
+		<control type="group">
+			<animation type="WindowOpen">
+				<effect type="fade" start="0" end="100" time="200" tween="cubic" easing="inout"/>
+				<effect type="zoom" start="150,150" end="100,100" center="640,360" time="200" tween="cubic" easing="inout"/>
+			</animation>
+			<animation type="WindowClose">
+				<effect type="fade" start="100" end="0" time="200" tween="cubic" easing="inout"/>
+				<effect type="zoom" start="100,100" end="150,150" center="640,360" time="200" tween="cubic" easing="inout"/>
+			</animation>
+			<posx>240</posx>
+			<posy>122</posy>
+			<control type="image">
+				<animation effect="fade" start="0" end="100" time="100">WindowOpen</animation>
+				<animation effect="fade" start="100" end="0" time="100">WindowClose</animation>
+				<posx>0</posx>
+				<posy>0</posy>
+				<width>800</width>
+				<height>372</height>
+				<texture border="64">black.png</texture>
+			</control>
+			<control type="label" id="106">
+				<description>heading label</description>
+				<posx>26</posx>
+				<posy>34</posy>
+				<width>750</width>
+				<height>28</height>
+				<font>font28b</font>
+				<align>left</align>
+				<scroll>true</scroll>
+				<haspath>false</haspath>
+				<wrapmultiline>false</wrapmultiline>
+				<aligny>center</aligny>
+				<label>Select item to play</label>
+				<textcolor>title</textcolor>
+			</control>
+			<control type="list" id="105">
+				<posx>40</posx>
+				<posy>110</posy>
+				<width>720</width>
+				<height>240</height>
+				<onleft>-</onleft>
+				<onright>-</onright>
+				<onup>-</onup>
+				<ondown>-</ondown>
+				<scrolltime>200</scrolltime>
+				<itemlayout width="720" height="40">
+					<control type="label">
+						<posx>20</posx>
+						<posy>0</posy>
+						<width>680</width>
+						<height>40</height>
+						<font>font22</font>
+						<aligny>center</aligny>
+						<textcolor>grey</textcolor>
+						<selectedcolor>grey</selectedcolor>
+						<align>left</align>
+						<info>ListItem.Label</info>
+					</control>
+				</itemlayout>
+				<focusedlayout width="720" height="40">
+					<control type="image">
+						<posx>0</posx>
+						<posy>0</posy>
+						<width>720</width>
+						<height>40</height>
+						<texture border="15">button_option_menu_on.png</texture>
+					</control>
+					<control type="label">
+						<posx>20</posx>
+						<posy>0</posy>
+						<width>680</width>
+						<height>40</height>
+						<font>font22b</font>
+						<aligny>center</aligny>
+						<textcolor>white</textcolor>
+						<selectedcolor>white</selectedcolor>
+						<align>left</align>
+						<info>ListItem.Label</info>
+						<scroll>true</scroll>
+						<scrollout>false</scrollout>
+						<scrollspeed>40</scrollspeed>
+						<pauseatend>4000</pauseatend>
+					</control>
+				</focusedlayout>
+				<content type="action">
+					<onclick lang="python"><![CDATA[
+list = mc.GetWindow(14100).GetList(105)
+mc.GetPlayer().PlaySelected(list.GetFocusedItem(), mc.PlayList.PLAYLIST_VIDEO)
+xbmc.executebuiltin("Dialog.Close(14100)")
+]]>
+					</onclick>
+				</content>
+			</control>
+		</control>
+	</controls>
+</window>

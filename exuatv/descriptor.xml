@@ -1,0 +1,16 @@
+<app>
+  <id>exuatv</id>
+  <name>EX.UA TV</name>
+  <version>0.1.22</version>
+  <description>Plays ex.ua videos</description>
+  <thumb>icon.png</thumb>
+  <repository>http://localhost/apps</repository>
+  <media>video</media>
+  <copyright></copyright>
+  <email>sergey.maysak@gmail.com</email>
+  <type>skin</type>
+  <startWindow>14000</startWindow>
+  <platform>all</platform>
+  <minversion>0.9.20</minversion>
+  <test-app>true</test-app>
+</app>
