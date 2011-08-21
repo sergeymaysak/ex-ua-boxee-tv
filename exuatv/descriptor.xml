@@ -1,16 +1,15 @@
 <app>
-  <id>exuatv</id>
+  <id>com.googlecode.ex-ua-boxee-tv.exuatv</id>
   <name>EX.UA TV</name>
-  <version>0.1.22</version>
-  <description>Plays ex.ua videos</description>
-  <thumb>icon.png</thumb>
-  <repository>http://localhost/apps</repository>
+  <version>1.0</version>
+  <description>EX.UA TV v1.0.22 Access and plays ex.ua content from Boxee.</description>
+  <thumb>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee/icon.png</thumb>
+  <repository>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee</repository>
   <media>video</media>
-  <copyright></copyright>
+  <copyright>sergey.maysak</copyright>
   <email>sergey.maysak@gmail.com</email>
   <type>skin</type>
   <startWindow>14000</startWindow>
   <platform>all</platform>
   <minversion>0.9.20</minversion>
-  <test-app>true</test-app>
 </app>
