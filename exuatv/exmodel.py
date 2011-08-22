@@ -87,7 +87,7 @@ class exmodel:
 		next = re.compile("<td><a href='([\w\d\?=&/_]+)'><img src='/t2/arr_r.gif'").search(videos)
 		nextPageItem = {}
 		if next:
-			nextPageItem = {"name": self.localize('Next >>'), "path": self.URL + next.group(1), "image": 'next.png'}
+			nextPageItem = {"name": self.localize('Next >>'), "path": self.URL + next.group(1), "image": ''}
 		return nextPageItem
 
 	'''Returns a list of available video sections'''
