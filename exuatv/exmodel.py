@@ -205,6 +205,7 @@ class exmodel:
 		# detect next item
 		nextPageItem = self.nextPageItem(videos)
 		if nextPageItem.has_key("path"):
+			nextPageItem["isSearch"] = True
 			pagesList.append(nextPageItem)
 			pagesDict["next"] = nextPageItem
 		# detect seach context

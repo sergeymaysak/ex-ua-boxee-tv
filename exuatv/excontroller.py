@@ -84,6 +84,9 @@ class excontroller:
 			item.SetLabel(page["name"])
 			item.SetPath(page["path"])
 			item.SetThumbnail(page["image"])
+			if page.has_key("isSearch"):
+				mc.LogInfo("add search result item")
+				item.SetProperty("isSearch", "true")
 			listItems.append(item)
 		return listItems
 
@@ -105,6 +108,8 @@ class excontroller:
 		navItemCurrent.SetPath(currentItem.GetPath())
 		if currentItem.GetProperty("search"):
 			navItemCurrent.SetProperty("search", currentItem.GetProperty("search"))
+		if currentItem.GetProperty("isSearch"):
+			navItemCurrent.SetProperty("isSearch", "true")
 		nav.append(navItemCurrent)
 		# reuse input next item if any
 		if nextItem:
@@ -115,14 +120,14 @@ class excontroller:
 
 	def UpdateNavigationContainerForLoadedPages(self, newCurrentNavItem, newNextNavItem, pushNavItem):
 		itemList = self.GetNavigationContainer().GetItems()
-		mc.LogInfo("listItems items count: %s" % str(self.GetNavigationContainer().GetItems()))
+		mc.LogInfo("nav listItems items count: %s" % str(self.GetNavigationContainer().GetItems()))
 		navList = mc.ListItems()
 		for it in self.GetNavigationContainer().GetItems():
 			navList.append(it)
 		navList.pop()
 		if pushNavItem:
 			#moving to next
-			mc.LogInfo("new paging: %s" % newCurrentNavItem.GetTitle())
+			mc.LogInfo("nav new paging: %s" % newCurrentNavItem.GetTitle())
 			navList.append(newCurrentNavItem)
 			navList.append(newNextNavItem)
 			self.GetNavigationContainer().SetItems(navList)
@@ -135,7 +140,7 @@ class excontroller:
 			self.GetNavigationContainer().SetFocusedItem(len(navList)-2)
 		mc.LogInfo("nav list:")
 		for resNav in navList:
-			mc.LogInfo("paging: %s" % resNav.GetTitle())
+			mc.LogInfo("nav paging: %s" % resNav.GetTitle())
 
 
 	def BuildCurrentAndNextItemsForLoadedPagesDict(self, sourceItem, pagesDict):
@@ -146,6 +151,8 @@ class excontroller:
 			currentItem.SetTitle(pagesDict["paging"])
 		if pagesDict.has_key("search"):
 			currentItem.SetProperty("search", pagesDict["search"])
+		if sourceItem.GetProperty("isSearch"):
+			currentItem.SetProperty("isSearch", "true")
 
 		if pagesDict.has_key("next"):
 			nextItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_CLIP)
@@ -153,6 +160,8 @@ class excontroller:
 			nextItem.SetLabel(sourceItem.GetLabel())
 			nextItem.SetPath(nextEXItem["path"])
 			nextItem.SetTitle(nextEXItem["name"])
+			if nextEXItem.has_key("isSearch"):
+				nextItem.SetProperty("isSearch", "true")
 			return currentItem, nextItem
 		else:
 			return currentItem, None
@@ -188,7 +197,12 @@ class excontroller:
 	def OnLoadSectionPages(self, listItem, startNewSection = True, pushState = False, pushNavItem = True):
 		url = listItem.GetPath()
 		mc.ShowDialogWait()
-		pagesDict = self.__exmodel.pagesDict(url)
+		if listItem.GetProperty("isSearch"):
+			mc.LogInfo("load search results section pages")
+			pagesDict = self.__exmodel.searchPagesDict(url)
+		else:
+			mc.LogInfo("load regular section pages")
+			pagesDict = self.__exmodel.pagesDict(url)
 		listItems = self.BuildListItemsForPagesList(pagesDict["pages"])
 		currentNavItem, nextNavItem = self.BuildCurrentAndNextItemsForLoadedPagesDict(listItem, pagesDict)
 		if pushState is True:
@@ -209,6 +223,7 @@ class excontroller:
 			listItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_CLIP)
 			listItem.SetLabel("Results for " + query)
 			listItem.SetPath(pagesDict["url"])
+			listItem.SetProperty("isSearch", "true")
 			currentNavItem, nextNavItem = self.BuildCurrentAndNextItemsForLoadedPagesDict(listItem, pagesDict)
 			# start new section for search
 			mc.GetActiveWindow().PushState()
@@ -225,6 +240,7 @@ class excontroller:
 				listItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_CLIP)
 				listItem.SetLabel("Results for " + query)
 				listItem.SetPath(pagesDict["url"])
+				listItem.SetProperty("isSearch", "true")
 				currentNavItem, nextNavItem = self.BuildCurrentAndNextItemsForLoadedPagesDict(listItem, pagesDict)
 				# start new section for search
 				mc.GetActiveWindow().PushState()
@@ -237,11 +253,16 @@ class excontroller:
 	def OnBack(self):
 		if self.GetPreviousNavItem():
 			mc.LogInfo("backing to item: %s" % self.GetPreviousNavItem().GetLabel())
+			if self.GetPreviousNavItem().GetProperty("isSearch"):
+				mc.LogInfo("back: to search result item")
 			#load pages for "back" item without storing result in navigation stack
 			self.OnLoadSectionPages(self.GetPreviousNavItem(), False, False, False)
 
 	def OnNext(self):
 		if self.GetNavNextPageItem():
+			mc.LogInfo("next item path: %s" % self.GetNavNextPageItem().GetPath())
+			if self.GetNavNextPageItem().GetProperty("isSearch"):
+				mc.LogInfo("next: to search result item")
 			self.OnLoadSectionPages(self.GetNavNextPageItem(), False, False, True)
 
 	def OnPageClick(self):
