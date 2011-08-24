@@ -36,7 +36,7 @@ exc.OnMainWindowLoad()
 			<height>20</height>
 			<font>font14</font>
 			<textcolor>40FFFFFF</textcolor>
-			<label>v0.3.24</label>
+			<label>v0.3.25</label>
 		</control>
 	</control>
 	<control type="grouplist">
@@ -70,6 +70,7 @@ exc.OnMainWindowLoad()
 				<align>center</align>
 				<aligny>center</aligny>
 				<onclick lang="python"><![CDATA[exc.OnSearchEverywhere()]]></onclick>
+				<onfocus lang="python"><![CDATA[exc.FixupNavigation()]]></onfocus>
 			</control>
 		</control>
 		<control type="group">
@@ -125,8 +126,8 @@ exc.OnMainWindowLoad()
 				<font>font21</font>
 				<align>center</align>
 				<aligny>center</aligny>
-				<onclick lang="python"><![CDATA[exc.OnSearchInActiveSection()]]>
-				</onclick>
+				<onclick lang="python"><![CDATA[exc.OnSearchInActiveSection()]]></onclick>
+				<onfocus lang="python"><![CDATA[exc.FixupNavigation()]]></onfocus>
 			</control>
 		</control>
 		<control type="group">
@@ -173,8 +174,7 @@ exc.OnMainWindowLoad()
 				<align>center</align>
 				<aligny>center</aligny>
 				<enable>Container(500).HasNext</enable>
-				<onclick lang="python"><![CDATA[exc.OnNext()]]>
-				</onclick>
+				<onclick lang="python"><![CDATA[exc.OnNext()]]></onclick>
 			</control>
 		</control>
 	</control>
@@ -223,8 +223,7 @@ exc.OnMainWindowLoad()
 			</control>
 		</focusedlayout>
 		<content type="action">
-			<onclick lang="python"><![CDATA[exc.OnSectionSelected()]]>
-			</onclick>
+			<onclick lang="python"><![CDATA[exc.OnSectionSelected()]]></onclick>
 		</content>
 	</control>
 	<control type="list" id="500">

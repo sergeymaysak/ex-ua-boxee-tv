@@ -115,7 +115,7 @@ class exmodel:
 			pagesList.append({"name": self.unescape(title + comments), "path": self.URL + link, "image": image + '?200'})
 		# find current subsection name
 		pagesName = re.compile("<font color=#808080><b>(\d+\.\.\d+)</b>").search(videos)
-		pagesDict = {"pages": pagesList}
+		pagesDict = {"pages": pagesList, "url": url}
 		if pagesName:
 			pagesDict["paging"] = pagesName.group(1)
 		# detect next item

@@ -27,6 +27,38 @@ class excontroller:
 
 	# private ivars
 	__exmodel = exmodel.exmodel()
+	__savedNavFocusedIndex = 0
+
+	def RestorePagesPanelFocusedItem(self):
+		#do something to restore missed focus item after video player
+		mc.LogInfo("RestorePagesPanelFocusedItem")
+		#if 0 != self.__savedNavFocusedIndex:
+		#	mc.LogInfo("Restored nav focused index: %s" % str(self.__savedNavFocusedIndex))
+		#	self.GetNavigationContainer().SetFocusedItem(self.__savedNavFocusedIndex)
+		#	self.__savedNavFocusedIndex = 0
+
+	def FixupNavigation(self):
+		pagesList = self.GetPagesPanel().GetItems()
+		panelUrl = ''
+		if len(pagesList) > 0: panelUrl = pagesList[0].GetProperty("panelurl")
+		listControl = self.GetNavigationContainer()
+		navFocusedItem = listControl.GetItem(listControl.GetFocusedItem())
+		if navFocusedItem.GetPath() != panelUrl:
+			indexOfNavItemToFocus = self.FindIndexOfNavItemWithPanelUrl(panelUrl)
+			listControl.SetFocusedItem(indexOfNavItemToFocus)
+
+	def FindIndexOfNavItemWithPanelUrl(self, panelUrl):
+		navItems = self.GetNavigationContainer().GetItems()
+		index = 0
+		for i in range(len(navItems)):
+			if navItems[i].GetPath() == panelUrl:
+				index = i
+				break
+		return index
+
+	def GetNavFocusedIndex(self):
+		listControl = self.GetNavigationContainer()
+		return listControl.GetFocusedItem()
 
 	def GetPreviousNavItem(self):
 		listControl = self.GetNavigationContainer()
@@ -48,10 +80,6 @@ class excontroller:
 			return listControl.GetItem(focusedIndex+1)
 		else:
 			return None
-
-	def RestorePagesPanelFocusedItem(self):
-		#do something to restore missed focus item after video player
-		mc.LogInfo("Current pages panel focused item: %s" % self.GetPagesFocusedItem().GetLabel())
 
 	def GetListFocuseditem(self, list):
 		return list.GetItem(list.GetFocusedItem())
@@ -77,16 +105,17 @@ class excontroller:
 	def GetNavigationContainer(self):
 		return mc.GetActiveWindow().GetList(500)
 
-	def BuildListItemsForPagesList(self, pagesList):
+	def BuildPanelItemsList(self, pagesDict):
 		listItems = mc.ListItems()
-		for page in pagesList:
+		for page in pagesDict["pages"]:
 			item = mc.ListItem(mc.ListItem.MEDIA_VIDEO_OTHER)
 			item.SetLabel(page["name"])
 			item.SetPath(page["path"])
 			item.SetThumbnail(page["image"])
 			if page.has_key("isSearch"):
-				mc.LogInfo("add search result item")
 				item.SetProperty("isSearch", "true")
+			if pagesDict.has_key("url"):
+				item.SetProperty("panelurl", pagesDict["url"])
 			listItems.append(item)
 		return listItems
 
@@ -113,35 +142,27 @@ class excontroller:
 		nav.append(navItemCurrent)
 		# reuse input next item if any
 		if nextItem:
+			nextItem.SetLabel(name)
 			nav.append(nextItem)
 		self.GetNavigationContainer().SetItems(nav)
 		# set current item as focused
 		self.GetNavigationContainer().SetFocusedItem(0)
 
 	def UpdateNavigationContainerForLoadedPages(self, newCurrentNavItem, newNextNavItem, pushNavItem):
-		itemList = self.GetNavigationContainer().GetItems()
-		mc.LogInfo("nav listItems items count: %s" % str(self.GetNavigationContainer().GetItems()))
+		#rebuild nav list for new items
 		navList = mc.ListItems()
 		for it in self.GetNavigationContainer().GetItems():
 			navList.append(it)
-		navList.pop()
+		# remove previosly stored next if any - it will be replaced by input new current item
+		if len(navList) > 0: navList.pop()
 		if pushNavItem:
 			#moving to next
-			mc.LogInfo("nav new paging: %s" % newCurrentNavItem.GetTitle())
 			navList.append(newCurrentNavItem)
-			navList.append(newNextNavItem)
-			self.GetNavigationContainer().SetItems(navList)
-			mc.LogInfo("added new nav item with paging: %s" % newCurrentNavItem.GetTitle())
-			mc.LogInfo("nav items count: %s" % str(len(navList)))
-			self.GetNavigationContainer().SetFocusedItem(len(navList)-2)
-		else:
-			# moving to previous
-			self.GetNavigationContainer().SetItems(navList)
-			self.GetNavigationContainer().SetFocusedItem(len(navList)-2)
-		mc.LogInfo("nav list:")
-		for resNav in navList:
-			mc.LogInfo("nav paging: %s" % resNav.GetTitle())
-
+			if newNextNavItem: navList.append(newNextNavItem)
+		self.GetNavigationContainer().SetItems(navList)
+		indexToFocus = len(navList) - 2
+		if indexToFocus < 0: indexToFocus = 0
+		self.GetNavigationContainer().SetFocusedItem(indexToFocus)
 
 	def BuildCurrentAndNextItemsForLoadedPagesDict(self, sourceItem, pagesDict):
 		currentItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_CLIP)
@@ -185,25 +206,27 @@ class excontroller:
 			self.GetSectionsList().SetFocusedItem(0)
 			self.OnSectionSelected()
 			mc.HideDialogWait()
-		self.RestorePagesPanelFocusedItem()
+		else:
+			mc.LogInfo("Main Window Re-load")
+			self.RestorePagesPanelFocusedItem()
 
 	def OnWindowPopState(self):
-		mc.LogInfo("On UnLoad Main Window called")
+		mc.LogInfo("On UnLoad Main Window called, Restore")
 
 	def OnSectionSelected(self):
 		mc.GetActiveWindow().ClearStateStack(False)
-		self.OnLoadSectionPages(self.GetSectionFocusedItem())
+		sectionItem = self.GetSectionFocusedItem()
+		if sectionItem is None: sectionItem = self.GetSectionsList().GetItem(0)
+		self.OnLoadSectionPages(sectionItem)
 
 	def OnLoadSectionPages(self, listItem, startNewSection = True, pushState = False, pushNavItem = True):
 		url = listItem.GetPath()
 		mc.ShowDialogWait()
 		if listItem.GetProperty("isSearch"):
-			mc.LogInfo("load search results section pages")
 			pagesDict = self.__exmodel.searchPagesDict(url)
 		else:
-			mc.LogInfo("load regular section pages")
 			pagesDict = self.__exmodel.pagesDict(url)
-		listItems = self.BuildListItemsForPagesList(pagesDict["pages"])
+		listItems = self.BuildPanelItemsList(pagesDict)
 		currentNavItem, nextNavItem = self.BuildCurrentAndNextItemsForLoadedPagesDict(listItem, pagesDict)
 		if pushState is True:
 			mc.GetActiveWindow().PushState()
@@ -219,7 +242,7 @@ class excontroller:
 		if 0 != len(query):
 			mc.LogInfo("string to search: %s" % query)
 			pagesDict = self.__exmodel.searchAllPagesDict(query)
-			listItems = exc.BuildListItemsForPagesList(pagesDict["pages"])
+			listItems = exc.BuildPanelItemsList(pagesDict)
 			listItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_CLIP)
 			listItem.SetLabel("Results for " + query)
 			listItem.SetPath(pagesDict["url"])
@@ -235,8 +258,7 @@ class excontroller:
 			query = mc.ShowDialogKeyboard("Search in %s" % self.GetNavSectionName(), "", False)
 			if 0 != len(query):
 				pagesDict = self.__exmodel.searchInSectionPagesDict(self.GetNavSearchContext(), query)
-				pagesList = pagesDict["pages"]
-				listItems = exc.BuildListItemsForPagesList(pagesList)
+				listItems = exc.BuildPanelItemsList(pagesDict)
 				listItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_CLIP)
 				listItem.SetLabel("Results for " + query)
 				listItem.SetPath(pagesDict["url"])
@@ -249,24 +271,22 @@ class excontroller:
 	
 	def OnFavorites(self):
 		mc.ShowDialogOk("User favorites", "Not implemented yet")
+		#mc.ActivateWindow(14028)
 
 	def OnBack(self):
 		if self.GetPreviousNavItem():
 			mc.LogInfo("backing to item: %s" % self.GetPreviousNavItem().GetLabel())
-			if self.GetPreviousNavItem().GetProperty("isSearch"):
-				mc.LogInfo("back: to search result item")
 			#load pages for "back" item without storing result in navigation stack
 			self.OnLoadSectionPages(self.GetPreviousNavItem(), False, False, False)
 
 	def OnNext(self):
 		if self.GetNavNextPageItem():
 			mc.LogInfo("next item path: %s" % self.GetNavNextPageItem().GetPath())
-			if self.GetNavNextPageItem().GetProperty("isSearch"):
-				mc.LogInfo("next: to search result item")
 			self.OnLoadSectionPages(self.GetNavNextPageItem(), False, False, True)
 
 	def OnPageClick(self):
 		focusedItem = self.GetPagesFocusedItem()
+		self.__savedNavFocusedIndex = self.GetNavFocusedIndex()
 		url = focusedItem.GetPath()
 		mc.ShowDialogWait()
 		exPlaylistDict = self.__exmodel.pagePlaylistDict({"url": url})
