@@ -8,10 +8,26 @@ from excontroller import exc
 exc.OnMainWindowLoad()
 ]]>
 	</onload>
-	<onunload lang="python"><![CDATA[exc.OnWindowPopState()]]></onunload>
 	<controls>
 	<include>Common_Background</include>
 	<include>BrowseLoadingAnimation</include>
+	<control type="button" id="510">
+		<description>Navigation focus helper(private)</description>
+		<!--visible>false</visible-->
+		<width>10</width>
+		<height>10</height>
+		<onleft>-</onleft>
+		<onright>-</onright>
+		<onup>-</onup>
+		<ondown>-</ondown>
+		<label></label>
+		<textcolor>grey</textcolor>
+		<font>font21</font>
+		<align>center</align>
+		<aligny>center</aligny>
+		<onclick lang="python"><![CDATA[]]></onclick>
+		<onfocus lang="python"><![CDATA[exc.FixupNavigation()]]></onfocus>
+	</control>
 	<control type="group">
 		<control type="label">
 			<posx>20</posx>
@@ -36,7 +52,7 @@ exc.OnMainWindowLoad()
 			<height>20</height>
 			<font>font14</font>
 			<textcolor>40FFFFFF</textcolor>
-			<label>v0.3.25</label>
+			<label>v0.3.26</label>
 		</control>
 	</control>
 	<control type="grouplist">
@@ -70,7 +86,6 @@ exc.OnMainWindowLoad()
 				<align>center</align>
 				<aligny>center</aligny>
 				<onclick lang="python"><![CDATA[exc.OnSearchEverywhere()]]></onclick>
-				<onfocus lang="python"><![CDATA[exc.FixupNavigation()]]></onfocus>
 			</control>
 		</control>
 		<control type="group">
@@ -127,7 +142,6 @@ exc.OnMainWindowLoad()
 				<align>center</align>
 				<aligny>center</aligny>
 				<onclick lang="python"><![CDATA[exc.OnSearchInActiveSection()]]></onclick>
-				<onfocus lang="python"><![CDATA[exc.FixupNavigation()]]></onfocus>
 			</control>
 		</control>
 		<control type="group">

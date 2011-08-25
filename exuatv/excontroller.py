@@ -27,25 +27,60 @@ class excontroller:
 
 	# private ivars
 	__exmodel = exmodel.exmodel()
-	__savedNavFocusedIndex = 0
+	
+	PAGES_PANEL_ID = 200
+	SEARCH_ALL_ID = 310
+	SEARCH_ID = 320
+
+	def SavePagesFocusedItem(self):
+		currentNavItem = self.GetListFocusedItem(self.GetNavigationContainer())
+		currentNavItem.SetProperty("pagesFocusedIndex", str(self.GetPagesPanel().GetFocusedItem()))
 
 	def RestorePagesPanelFocusedItem(self):
 		#do something to restore missed focus item after video player
 		mc.LogInfo("RestorePagesPanelFocusedItem")
-		#if 0 != self.__savedNavFocusedIndex:
-		#	mc.LogInfo("Restored nav focused index: %s" % str(self.__savedNavFocusedIndex))
-		#	self.GetNavigationContainer().SetFocusedItem(self.__savedNavFocusedIndex)
-		#	self.__savedNavFocusedIndex = 0
+		navFocusedItem = self.GetListFocusedItem(self.GetNavigationContainer())
+		if navFocusedItem.GetProperty("pagesFocusedIndex"):
+			mc.LogInfo("FixupNavigation restored pages panel focused index to %s" % str(navFocusedItem.GetProperty("pagesFocusedIndex")))
+			self.GetPagesPanel().SetFocusedItem(int(navFocusedItem.GetProperty("pagesFocusedIndex")))
+
+	def SaveWindowState(self):
+		# save all focused items
+		currentFocusControlId = self.PAGES_PANEL_ID
+		# find current focused control
+		if self.GetControl(self.SEARCH_ALL_ID).HasFocus():
+			currentFocusControlId = self.SEARCH_ALL_ID
+		elif self.GetControl(self.SEARCH_ID).HasFocus():
+			currentFocusControlId = self.SEARCH_ID
+		elif self.GetControl(self.PAGES_PANEL_ID).HasFocus():
+			currentFocusControlId = self.PAGES_PANEL_ID
+		# store current focus info in nav container's focused item
+		currentNavItem = self.GetListFocusedItem(self.GetNavigationContainer())
+		currentNavItem.SetProperty("focusId", str(currentFocusControlId))
+		self.SavePagesFocusedItem()
+		self.GetNavAnchorControl().SetFocus()
+		mc.GetActiveWindow().PushState()
+		self.GetControl(currentFocusControlId).SetFocus()
 
 	def FixupNavigation(self):
 		pagesList = self.GetPagesPanel().GetItems()
 		panelUrl = ''
 		if len(pagesList) > 0: panelUrl = pagesList[0].GetProperty("panelurl")
 		listControl = self.GetNavigationContainer()
-		navFocusedItem = listControl.GetItem(listControl.GetFocusedItem())
+		navFocusedItem = self.GetListFocusedItem(listControl)
 		if navFocusedItem.GetPath() != panelUrl:
 			indexOfNavItemToFocus = self.FindIndexOfNavItemWithPanelUrl(panelUrl)
 			listControl.SetFocusedItem(indexOfNavItemToFocus)
+		# restore focused control
+		navFocusedItem = self.GetListFocusedItem(listControl)
+		controlIDToFocus = -1
+		if navFocusedItem.GetProperty("focusId"):
+			controlIDToFocus = int(navFocusedItem.GetProperty("focusId"))
+		if controlIDToFocus != -1:
+			mc.LogInfo("FixupNavigation restored focus to control with id %s" % str(controlIDToFocus))
+			self.GetControl(controlIDToFocus).SetFocus()
+		# restore focused item in pages panel
+		self.RestorePagesPanelFocusedItem()
 
 	def FindIndexOfNavItemWithPanelUrl(self, panelUrl):
 		navItems = self.GetNavigationContainer().GetItems()
@@ -81,29 +116,41 @@ class excontroller:
 		else:
 			return None
 
-	def GetListFocuseditem(self, list):
+	def GetControl(self, id):
+		return mc.GetActiveWindow().GetControl(id)
+
+	def GetListFocusedItem(self, list):
 		return list.GetItem(list.GetFocusedItem())
 
 	def GetSectionFocusedItem(self):
-		return self.GetListFocuseditem(self.GetSectionsList())
+		return self.GetListFocusedItem(self.GetSectionsList())
 
 	def GetPagesFocusedItem(self):
-		return self.GetListFocuseditem(self.GetPagesPanel())
+		return self.GetListFocusedItem(self.GetPagesPanel())
 
 	def GetSectionsList(self):
 		return mc.GetActiveWindow().GetList(100)
 
 	def GetPagesPanel(self):
-		return mc.GetActiveWindow().GetList(200)
+		return mc.GetActiveWindow().GetList(self.PAGES_PANEL_ID)
+
+	def GetSearchAllControl(self):
+		return self.GetControl(self.SEARCH_ALL_ID)
+
+	def GetSearchControl(self):
+		return self.GetControl(self.SEARCH_ID)
 
 	def GetNextControl(self):
-		return mc.GetActiveWindow().GetControl(340)
+		return self.GetControl(340)
 
 	def GetBackControl(self):
-		return mc.GetActiveWindow().GetControl(330)
+		return self.GetControl(330)
 
 	def GetNavigationContainer(self):
 		return mc.GetActiveWindow().GetList(500)
+
+	def GetNavAnchorControl(self):
+		return self.GetControl(510)
 
 	def BuildPanelItemsList(self, pagesDict):
 		listItems = mc.ListItems()
@@ -210,9 +257,6 @@ class excontroller:
 			mc.LogInfo("Main Window Re-load")
 			self.RestorePagesPanelFocusedItem()
 
-	def OnWindowPopState(self):
-		mc.LogInfo("On UnLoad Main Window called, Restore")
-
 	def OnSectionSelected(self):
 		mc.GetActiveWindow().ClearStateStack(False)
 		sectionItem = self.GetSectionFocusedItem()
@@ -229,7 +273,7 @@ class excontroller:
 		listItems = self.BuildPanelItemsList(pagesDict)
 		currentNavItem, nextNavItem = self.BuildCurrentAndNextItemsForLoadedPagesDict(listItem, pagesDict)
 		if pushState is True:
-			mc.GetActiveWindow().PushState()
+			self.SaveWindowState()
 		if pushState or startNewSection:
 			self.StartNavNewSection(listItem.GetLabel(), currentNavItem, nextNavItem)
 		else:
@@ -249,7 +293,7 @@ class excontroller:
 			listItem.SetProperty("isSearch", "true")
 			currentNavItem, nextNavItem = self.BuildCurrentAndNextItemsForLoadedPagesDict(listItem, pagesDict)
 			# start new section for search
-			mc.GetActiveWindow().PushState()
+			self.SaveWindowState()
 			self.StartNavNewSection(listItem.GetLabel(), currentNavItem, nextNavItem)
 			self.GetPagesPanel().SetItems(listItems)
 
@@ -265,7 +309,7 @@ class excontroller:
 				listItem.SetProperty("isSearch", "true")
 				currentNavItem, nextNavItem = self.BuildCurrentAndNextItemsForLoadedPagesDict(listItem, pagesDict)
 				# start new section for search
-				mc.GetActiveWindow().PushState()
+				self.SaveWindowState()
 				self.StartNavNewSection(listItem.GetLabel(), currentNavItem, nextNavItem)
 				self.GetPagesPanel().SetItems(listItems)
 	
@@ -286,7 +330,7 @@ class excontroller:
 
 	def OnPageClick(self):
 		focusedItem = self.GetPagesFocusedItem()
-		self.__savedNavFocusedIndex = self.GetNavFocusedIndex()
+		self.SavePagesFocusedItem()
 		url = focusedItem.GetPath()
 		mc.ShowDialogWait()
 		exPlaylistDict = self.__exmodel.pagePlaylistDict({"url": url})
