@@ -1,7 +1,7 @@
 <repository>
 	<id>com.ex-ua-boxee-tv.googlecode</id>
 	<url>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee/</url>
-	<name>The Repository for exuatv on Boxee on Google</name>
+	<name>The sam's repository for Boxee apps</name>
 	<thumb>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee/icon.png</thumb>
 	<description>This repository contains the EX.UA TV application for Boxee.</description>
 </repository>
