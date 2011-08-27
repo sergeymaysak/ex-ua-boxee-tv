@@ -14,12 +14,14 @@ exc.OnMainWindowLoad()
 	<control type="button" id="510">
 		<description>Navigation focus helper(private)</description>
 		<!--visible>false</visible-->
+		<posx>-20</posx>
+		<posy>-20</posy>
 		<width>10</width>
 		<height>10</height>
-		<onleft>-</onleft>
-		<onright>-</onright>
-		<onup>-</onup>
-		<ondown>-</ondown>
+		<onleft>310</onleft>
+		<onright>310</onright>
+		<onup>310</onup>
+		<ondown>310</ondown>
 		<label></label>
 		<textcolor>grey</textcolor>
 		<font>font21</font>
@@ -52,7 +54,7 @@ exc.OnMainWindowLoad()
 			<height>20</height>
 			<font>font14</font>
 			<textcolor>40FFFFFF</textcolor>
-			<label>v0.4.26</label>
+			<label>v0.5.27</label>
 		</control>
 	</control>
 	<control type="grouplist">
@@ -76,7 +78,7 @@ exc.OnMainWindowLoad()
 				<onright>320</onright>
 				<onup>-</onup>
 				<ondown>350</ondown>
-				<label>Search Everywhere</label>
+				<label>$LOCALIZE[10]</label>
 				<textcolor>grey</textcolor>
 				<focusedcolor>white</focusedcolor>
 				<texturenofocus border="20">button_option_menu.png</texturenofocus>
@@ -92,13 +94,14 @@ exc.OnMainWindowLoad()
 			<width>200</width>
 			<height>48</height>
 			<control type="button" id="350">
+				<description>favourites section button</description>
 				<width>200</width>
 				<height>38</height>
 				<onleft>100</onleft>
 				<onright>200</onright>
 				<onup>310</onup>
 				<ondown>100</ondown>
-				<label>Favorites</label>
+				<label>$LOCALIZE[13]</label>
 				<textcolor>grey</textcolor>
 				<focusedcolor>white</focusedcolor>
 				<texturenofocus border="20">button_option_menu.png</texturenofocus>
@@ -112,7 +115,7 @@ exc.OnMainWindowLoad()
 		</control>
 	</control>
 	<control type="grouplist" id="300">
-		<posx>980</posx>
+		<posx>975</posx>
 		<posy>88</posy>
 		<width>500</width>
 		<height>58</height>
@@ -123,16 +126,17 @@ exc.OnMainWindowLoad()
 		<orientation>horizontal</orientation>
 		<usecontrolcoords>false</usecontrolcoords>
 		<control type="group">
-			<width>100</width>
+			<width>90</width>
 			<height>58</height>
 			<control type="button" id="320">
-				<width>100</width>
+				<description>search in current section button</description>
+				<width>90</width>
 				<height>38</height>
 				<onleft>310</onleft>
 				<onright>330</onright>
 				<onup>-</onup>
 				<ondown>200</ondown>
-				<label>Search</label>
+				<label>$LOCALIZE[137]</label>
 				<textcolor>grey</textcolor>
 				<focusedcolor>white</focusedcolor>
 				<texturenofocus border="20">button_option_menu.png</texturenofocus>
@@ -145,16 +149,16 @@ exc.OnMainWindowLoad()
 			</control>
 		</control>
 		<control type="group">
-			<width>80</width>
+			<width>90</width>
 			<height>58</height>
 			<control type="button" id="330">
-				<width>80</width>
+				<width>90</width>
 				<height>38</height>
 				<onleft>320</onleft>
 				<onright>340</onright>
 				<onup>-</onup>
 				<ondown>200</ondown>
-				<label>Back</label>
+				<label>$LOCALIZE[12]</label>
 				<textcolor>grey</textcolor>
 				<focusedcolor>white</focusedcolor>
 				<texturenofocus border="20">button_option_menu.png</texturenofocus>
@@ -169,16 +173,17 @@ exc.OnMainWindowLoad()
 			</control>
 		</control>
 		<control type="group">
-			<width>80</width>
+			<width>90</width>
 			<height>58</height>
 			<control type="button" id="340">
-				<width>80</width>
+				<description>Next button</description>
+				<width>90</width>
 				<height>38</height>
 				<onleft>330</onleft>
 				<onright>-</onright>
 				<onup>-</onup>
 				<ondown>200</ondown>
-				<label>Next</label>
+				<label>$LOCALIZE[11]</label>
 				<textcolor>grey</textcolor>
 				<focusedcolor>white</focusedcolor>
 				<texturenofocus border="20">button_option_menu.png</texturenofocus>
@@ -241,7 +246,8 @@ exc.OnMainWindowLoad()
 		</content>
 	</control>
 	<control type="list" id="500">
-		<posx>260</posx>
+		<description>Navigation history container</description>
+		<posx>255</posx>
 		<posy>88</posy>
 		<width>800</width>
 		<height>40</height>
@@ -313,7 +319,7 @@ exc.OnMainWindowLoad()
 		</content>
 	</control>
 	<control type="group">
-		<posx>200</posx>
+		<posx>195</posx>
 		<posy>0</posy>
 		<animation type="Conditional" condition="Window.IsVisible(DialogProgress.xml)">
 			<effect type="fade" start="100" end="20" time="200"/>
@@ -329,7 +335,7 @@ exc.OnMainWindowLoad()
 			<width>760</width>
 			<height>575</height>
 			<onleft>100</onleft>
-			<onright>-</onright>
+			<onright>320</onright>
 			<onup>310</onup>
 			<ondown>-</ondown>
 			<scrolltime>400</scrolltime>
@@ -479,9 +485,9 @@ exc.OnMainWindowLoad()
 				<visible>true</visible>
 				<animation effect="fade" start="0" end="100" time="200" tween="cubic" easing="inout" delay="50">Visible</animation>
 				<visible>Control.IsVisible(200)</visible>
-				<posx>820</posx>
+				<posx>790</posx>
 				<posy>152</posy>
-				<width>250</width>
+				<width>300</width>
 				<height>534</height>
 				<itemgap>8</itemgap>
 				<orientation>vertical</orientation>

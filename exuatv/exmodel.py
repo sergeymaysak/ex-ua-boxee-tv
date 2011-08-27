@@ -29,6 +29,13 @@ import re
 import tempfile
 from htmlentitydefs import name2codepoint
 
+'''localizer defines an abstract interface for obtaining localized strings.
+Implementor is responsible to define th way to return localized test for input
+text accourding to current user locale.'''
+class localizer:
+	def localizedString(self, text):
+		pass
+
 '''exmodel acts as a data model provider performing loading data from ex.ua'''
 class exmodel:
 	URL = 'http://www.ex.ua'
@@ -51,9 +58,15 @@ class exmodel:
 		('&nbsp;', ' '),
 	)
 
+	localizer = localizer()
+
+	def __init__(self, localizer):
+		self.localizer = localizer
+
 	# Private methods
-	def localize(self, text):
-		return text
+	
+	def localizedString(self, text):
+		return self.localizer.localizedString(text)
 
 	def unescape(self, string):
 		for (symbol, code) in self.htmlCodes:
@@ -87,7 +100,7 @@ class exmodel:
 		next = re.compile("<td><a href='([\w\d\?=&/_]+)'><img src='/t2/arr_r.gif'").search(videos)
 		nextPageItem = {}
 		if next:
-			nextPageItem = {"name": self.localize('Next >>'), "path": self.URL + next.group(1), "image": ''}
+			nextPageItem = {"name": self.localizedString("Next") + ' >>', "path": self.URL + next.group(1), "image": ''}
 		return nextPageItem
 
 	'''Returns a list of available video sections'''
@@ -159,7 +172,7 @@ class exmodel:
 			description += details.group(3).replace('смотреть онлайн', '')
 			comments = re.compile("<a href='(/view_comments/\d+).+?(\d+)</a>").search(content)
 			if comments:
-				description += '[B]:::Comments:::[/B]\n\n'
+				description += self.localizedString('[B]Comments[/B]\n\n')
 				commentsContent = self.fetchData(self.URL + comments.group(1))
 				for (commentTitle, comment) in re.compile("<a href='/view_comments/\d+'><b>(.+?)</b>.+?<p>(.+?)<p>", re.DOTALL).findall(commentsContent):
 					description += "[B]%s[/B]%s" % (commentTitle, comment)

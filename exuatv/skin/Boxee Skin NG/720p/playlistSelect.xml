@@ -24,7 +24,8 @@ for i in range(videoPlaylist.Size()):
 mc.GetWindow(winId).GetList(listId).SetItems(videos)
 mc.GetWindow(winId).GetList(listId).SetFocusedItem(0)
 mc.GetWindow(winId).GetList(listId).SetSelected(0, True)
-mc.GetWindow(winId).GetLabel(labelId).SetLabel("Playlist: %s" % videoPlaylist.GetItem(0).GetTitle())
+dialogTitle = mc.GetLocalizedString(559) + ": " + videoPlaylist.GetItem(0).GetTitle()
+mc.GetWindow(winId).GetLabel(labelId).SetLabel(dialogTitle)
 
 mc.LogInfo("Select playlist window is loaded")
 ]]>
@@ -124,7 +125,6 @@ mc.LogInfo("Select playlist window is loaded")
 					<onclick lang="python"><![CDATA[
 list = mc.GetWindow(14100).GetList(105)
 mc.GetPlayer().PlaySelected(list.GetFocusedItem(), mc.PlayList.PLAYLIST_VIDEO)
-xbmc.executebuiltin("Dialog.Close(14100)")
 ]]>
 					</onclick>
 				</content>
