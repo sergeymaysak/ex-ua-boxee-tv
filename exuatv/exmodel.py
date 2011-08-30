@@ -29,15 +29,15 @@ import re
 import tempfile
 from htmlentitydefs import name2codepoint
 
+class localizer:
 '''localizer defines an abstract interface for obtaining localized strings.
 Implementor is responsible to define th way to return localized test for input
 text accourding to current user locale.'''
-class localizer:
 	def localizedString(self, text):
 		return text
 
-'''exmodel acts as a data model provider performing loading data from ex.ua'''
 class exmodel:
+'''exmodel acts as a data model provider performing loading data from ex.ua'''
 	URL = 'http://www.ex.ua'
 	USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:5.0) Gecko/20100101 Firefox/5.0"
 	ROWCOUNT = (15, 30, 50, 100)[1]
@@ -103,16 +103,16 @@ class exmodel:
 			nextPageItem = {"name": self.localizedString("Next") + ' >>', "path": self.URL + next.group(1), "image": ''}
 		return nextPageItem
 
-	'''Returns a list of available video sections'''
 	def sectionsList(self):
+	'''Returns a list of available video sections'''
 		sectionsList = list()
 		sections = self.fetchData("%s/%s/video" % (self.URL, self.LANGUAGE))
 		for (link, sectionName, count) in re.compile("<a href='(/view/.+?)'><b>(.+?)</b></a><p><a href='/view/.+?' class=info>.+?: (\d+)</a>").findall(sections):
 			sectionsList.append({"name": sectionName, "path": str(self.URL + link)})
 		return sectionsList
 
-	'''Returns a dictionary containing list of pages in section and suplementary metadata to this list'''
 	def pagesDict(self, url):
+	'''Returns a dictionary containing list of pages in section and suplementary metadata to this list'''
 		url = urllib.unquote_plus(url)
 		videos = self.fetchData(url)
 		# fill pages list
