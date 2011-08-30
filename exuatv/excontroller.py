@@ -19,6 +19,7 @@
 __author__="sam"
 __date__ ="$Aug 9, 2011 12:53:46 AM$"
 
+import os
 import mc
 import xbmc
 import exmodel
@@ -340,44 +341,72 @@ class excontroller:
 			mc.LogInfo("next item path: %s" % self.GetNavNextPageItem().GetPath())
 			self.OnLoadSectionPages(self.GetNavNextPageItem(), False, False, True)
 
+	def GetPlayableItemForItemInDict(self, item, playDict):
+		playItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_OTHER)
+		#playItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_TRAILER)
+		playItem.SetThumbnail(playDict["image"])
+		#playItem.SetIcon(exPlaylistDict["image"])
+		#playItem.SetImage(0, exPlaylistDict["image"])
+		playItem.SetTitle(playDict["title"])
+		playItem.SetDescription(playDict["description"])
+		playItem.SetLabel(playDict["title"])
+		playItem.SetPath(item["path"])
+		#playItem.SetResumable(True)
+		return playItem
+
+	def IsItemPointsToTrailer(self, itemDict):
+		names = ["trailer", "sample", "трейлер"]
+		name, ext = os.path.splitext(itemDict["name"])
+		if name.lower() in names:
+			return True
+		return False
+
+	def IsPlaylistContainsTrailer(self, playItemsList):
+		for item in playItemsList:
+			if self.IsItemPointsToTrailer(item):
+				return True
+		return False
+
+	def GetFullMovieItemFromList(self, playItemsList):
+		for item in playItemsList:
+			if False == self.IsItemPointsToTrailer(item):
+				return item
+		return playItemsList[0]
+
+	def RunPlayerForItemsFromDict(self, playDict):
+		exPlayitemsList = playDict["playitems"]
+		if 1 == len(exPlayitemsList):
+			exItem = exPlayitemsList[0]
+			playItem = self.GetPlayableItemForItemInDict(exItem, playDict)
+			mc.GetPlayer().PlayWithActionMenu(playItem)
+		elif 2 == len(exPlayitemsList) and self.IsPlaylistContainsTrailer(exPlayitemsList):
+			exItem = self.GetFullMovieItemFromList(exPlayitemsList)
+			playItem = self.GetPlayableItemForItemInDict(exItem, playDict)
+			mc.GetPlayer().PlayWithActionMenu(playItem)
+		else:
+			videoPlaylist = mc.PlayList(mc.PlayList.PLAYLIST_VIDEO)
+			videoPlaylist.Clear()
+			for theItem in exPlayitemsList:
+				playItem = self.GetPlayableItemForItemInDict(theItem, playDict)
+				playItem.SetLabel(theItem["name"])
+				mc.LogInfo("added to playlist item with name: %s" % theItem["name"])
+				videoPlaylist.Add(playItem)
+			#show playlist selection dialog (playlistSelect.xml)
+			mc.ActivateWindow(14100)
+			mc.LogInfo("show playlist selection dialog called")
+
 	def OnPageClick(self):
 		focusedItem = self.GetPagesFocusedItem()
 		self.SavePagesFocusedItem()
 		self.SaveSectionsFocusedItem()
 		url = focusedItem.GetPath()
 		mc.ShowDialogWait()
-		exPlaylistDict = self.__exmodel.pagePlaylistDict({"url": url})
+		playDict = self.__exmodel.pagePlaylistDict({"url": url})
 		mc.HideDialogWait()
-		if exPlaylistDict.has_key("playitems"):
-			exPlayitemsList = exPlaylistDict["playitems"]
-			if 1 == len(exPlayitemsList):
-				exItem = exPlayitemsList[0]
-				playItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_OTHER)
-				playItem.SetThumbnail(focusedItem.GetThumbnail())
-				playItem.SetTitle(exPlaylistDict["title"])
-				playItem.SetDescription(exPlaylistDict["description"])
-				playItem.SetLabel(exPlaylistDict["title"])
-				playItem.SetPath(exItem["path"])
-				mc.GetPlayer().PlayWithActionMenu(playItem)
-			else:
-				videoPlaylist = mc.PlayList(mc.PlayList.PLAYLIST_VIDEO)
-				videoPlaylist.Clear()
-				for theItem in exPlayitemsList:
-					playItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_OTHER)
-					playItem.SetThumbnail(focusedItem.GetThumbnail())
-					#playItem.SetIcon(exPlaylistDict["image"])
-					#playItem.SetImage(0, exPlaylistDict["image"])
-					playItem.SetTitle(exPlaylistDict["title"])
-					playItem.SetDescription(exPlaylistDict["description"])
-					playItem.SetLabel(theItem["name"])
-					playItem.SetPath(theItem["path"])
-					mc.LogInfo("added to playlist item with name: %s" % theItem["name"])
-					videoPlaylist.Add(playItem)
-				#show playlist selection dialog (playlistSelect.xml)
-				mc.ActivateWindow(14100)
-				mc.LogInfo("show playlist selection dialog called")
+		if playDict.has_key("playitems"):
+			self.RunPlayerForItemsFromDict(playDict)
 		else:
-			if self.GetNavNextPageItem() and self.GetNavNextPageItem().GetPath() == focusedItem.GetPath():
+			if self.GetNavNextPageItem() and self.GetNavNextPageItem().GetPath() == url:
 				# go to next manually to not push window state
 				self.OnNext()
 			else:

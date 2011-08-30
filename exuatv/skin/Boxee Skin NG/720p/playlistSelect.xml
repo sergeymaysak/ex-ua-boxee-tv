@@ -3,31 +3,8 @@
 	<defaultcontrol>105</defaultcontrol>
 	<allowoverlay>no</allowoverlay>
 	<onload lang="python"><![CDATA[
-import mc
-import xbmc
-
-# external caller is responsible to prepare shared boxee video playlist
-# before show this dialog
-
-listId = 105
-winId = 14100
-labelId = 106
-
-videoPlaylist = mc.PlayList(mc.PlayList.PLAYLIST_VIDEO)
-videos = mc.ListItems()
-for i in range(videoPlaylist.Size()):
-	playlistItem = videoPlaylist.GetItem(i)
-	item = mc.ListItem(mc.ListItem.MEDIA_VIDEO_OTHER)
-	item.SetLabel(playlistItem.GetLabel())
-	item.SetPath(playlistItem.GetPath())
-	videos.append(item)
-mc.GetWindow(winId).GetList(listId).SetItems(videos)
-mc.GetWindow(winId).GetList(listId).SetFocusedItem(0)
-mc.GetWindow(winId).GetList(listId).SetSelected(0, True)
-dialogTitle = mc.GetLocalizedString(559) + ": " + videoPlaylist.GetItem(0).GetTitle()
-mc.GetWindow(winId).GetLabel(labelId).SetLabel(dialogTitle)
-
-mc.LogInfo("Select playlist window is loaded")
+from exPlaylistController import explc
+explc.OnDialogLoad()
 ]]>
     </onload>
 	<controls>
@@ -54,8 +31,8 @@ mc.LogInfo("Select playlist window is loaded")
 				<posx>0</posx>
 				<posy>0</posy>
 				<width>800</width>
-				<height>372</height>
-				<texture border="64">black.png</texture>
+				<height>472</height>
+				<texture border="20">dialog.png</texture>
 			</control>
 			<control type="label" id="106">
 				<description>heading label</description>
@@ -80,7 +57,7 @@ mc.LogInfo("Select playlist window is loaded")
 				<onleft>-</onleft>
 				<onright>-</onright>
 				<onup>-</onup>
-				<ondown>-</ondown>
+				<ondown>160</ondown>
 				<scrolltime>200</scrolltime>
 				<itemlayout width="720" height="40">
 					<control type="label">
@@ -98,6 +75,7 @@ mc.LogInfo("Select playlist window is loaded")
 				</itemlayout>
 				<focusedlayout width="720" height="40">
 					<control type="image">
+						<visible>Control.HasFocus(105)</visible>
 						<posx>0</posx>
 						<posy>0</posy>
 						<width>720</width>
@@ -122,12 +100,80 @@ mc.LogInfo("Select playlist window is loaded")
 					</control>
 				</focusedlayout>
 				<content type="action">
-					<onclick lang="python"><![CDATA[
-list = mc.GetWindow(14100).GetList(105)
-mc.GetPlayer().PlaySelected(list.GetFocusedItem(), mc.PlayList.PLAYLIST_VIDEO)
-]]>
-					</onclick>
+					<onclick lang="python"><![CDATA[explc.OnPlayListItemSelected()]]></onclick>
 				</content>
+			</control>
+			<control type="group" id="150">
+				<description>actions panel</description>
+				<posx>40</posx>
+				<posy>350</posy>
+				<width>840</width>
+				<height>100</height>
+				<control type="list" id="160">
+					<posx>-18</posx>
+					<posy>0</posy>
+					<width>600</width>
+					<height>100</height>
+					<onup>105</onup>
+					<onright>-</onright>
+					<onleft>-</onleft>
+					<ondown>-</ondown>
+					<orientation>horizontal</orientation>
+					<offsetx>20</offsetx>
+					<offsety>5</offsety>
+					<itemlayout width="70" height="90">
+						<control type="image">
+							<posx>10</posx>
+							<posy>10</posy>
+							<width>50</width>
+							<height>50</height>
+							<colordiffuse>80FFFFFF</colordiffuse>
+							<texture>$INFO[ListItem.Thumb]</texture>
+						</control>
+					</itemlayout>
+					<focusedlayout width="70" height="90">
+						<control type="image">
+							<visible>Control.HasFocus(160)</visible>
+							<posx>0</posx>
+							<posy>0</posy>
+							<width>70</width>
+							<height>70</height>
+							<texture border="15">button_option_menu_on.png</texture>
+						</control>
+						<control type="image">
+							<visible>!Control.HasFocus(160)</visible>
+							<posx>10</posx>
+							<posy>10</posy>
+							<width>50</width>
+							<height>50</height>
+							<colordiffuse>80FFFFFF</colordiffuse>
+							<texture>$INFO[ListItem.Thumb]</texture>
+						</control>
+						<control type="image">
+							<visible>Control.HasFocus(160)</visible>
+							<posx>10</posx>
+							<posy>10</posy>
+							<width>50</width>
+							<height>50</height>
+							<texture>$INFO[ListItem.Thumb]</texture>
+						</control>
+						<control type="label">
+							<visible>Control.HasFocus(160)</visible>
+							<posx>35</posx>
+							<posy>74</posy>
+							<width>200</width>
+							<height>20</height>
+							<font>title16b</font>
+							<align>center</align>
+							<aligny>center</aligny>
+							<label>[UPPERCASE]$INFO[ListItem.Label][/UPPERCASE]</label>
+							<textcolor>white</textcolor>
+						</control>
+					</focusedlayout>
+					<content type="action">
+						<onclick lang="python"><![CDATA[explc.OnAction()]]></onclick>
+					</content>
+				</control>
 			</control>
 		</control>
 	</controls>
