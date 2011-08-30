@@ -34,7 +34,7 @@ Implementor is responsible to define th way to return localized test for input
 text accourding to current user locale.'''
 class localizer:
 	def localizedString(self, text):
-		pass
+		return text
 
 '''exmodel acts as a data model provider performing loading data from ex.ua'''
 class exmodel:
