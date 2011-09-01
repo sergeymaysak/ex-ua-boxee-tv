@@ -342,16 +342,15 @@ class excontroller:
 			self.OnLoadSectionPages(self.GetNavNextPageItem(), False, False, True)
 
 	def GetPlayableItemForItemInDict(self, item, playDict):
-		playItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_OTHER)
-		#playItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_TRAILER)
+		type = mc.ListItem.MEDIA_VIDEO_OTHER
+		playItem = mc.ListItem(type)
 		playItem.SetThumbnail(playDict["image"])
 		#playItem.SetIcon(exPlaylistDict["image"])
 		#playItem.SetImage(0, exPlaylistDict["image"])
-		playItem.SetTitle(playDict["title"])
+		playItem.SetTitle(playDict["title"])		
 		playItem.SetDescription(playDict["description"])
 		playItem.SetLabel(playDict["title"])
 		playItem.SetPath(item["path"])
-		#playItem.SetResumable(True)
 		return playItem
 
 	def IsItemPointsToTrailer(self, itemDict):

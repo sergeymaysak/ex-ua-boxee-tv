@@ -30,14 +30,15 @@ import tempfile
 from htmlentitydefs import name2codepoint
 
 class localizer:
-'''localizer defines an abstract interface for obtaining localized strings.
-Implementor is responsible to define th way to return localized test for input
-text accourding to current user locale.'''
+	'''localizer defines an abstract interface for obtaining localized strings.
+	Implementor is responsible to define th way to return localized test for input
+	text accourding to current user locale.'''
+	
 	def localizedString(self, text):
 		return text
 
 class exmodel:
-'''exmodel acts as a data model provider performing loading data from ex.ua'''
+	'''exmodel acts as a data model provider performing loading data from ex.ua'''
 	URL = 'http://www.ex.ua'
 	USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:5.0) Gecko/20100101 Firefox/5.0"
 	ROWCOUNT = (15, 30, 50, 100)[1]
@@ -104,7 +105,7 @@ class exmodel:
 		return nextPageItem
 
 	def sectionsList(self):
-	'''Returns a list of available video sections'''
+		'''Returns a list of available video sections'''
 		sectionsList = list()
 		sections = self.fetchData("%s/%s/video" % (self.URL, self.LANGUAGE))
 		for (link, sectionName, count) in re.compile("<a href='(/view/.+?)'><b>(.+?)</b></a><p><a href='/view/.+?' class=info>.+?: (\d+)</a>").findall(sections):
@@ -112,7 +113,7 @@ class exmodel:
 		return sectionsList
 
 	def pagesDict(self, url):
-	'''Returns a dictionary containing list of pages in section and suplementary metadata to this list'''
+		'''Returns a dictionary containing list of pages in section and suplementary metadata to this list'''
 		url = urllib.unquote_plus(url)
 		videos = self.fetchData(url)
 		# fill pages list
@@ -180,19 +181,19 @@ class exmodel:
 			playlistDict["description"] = self.unescape(self.stripHtml(description))
 		return playlistDict
 
-	'''Returns a dictionary with search results of 'search everywhere' '''
 	def searchAllPagesDict(self, query):
+		'''Returns a dictionary with search results of 'search everywhere' '''
 		url = urllib.quote_plus(self.URL + '/search?s=' + query)
 		url = urllib.unquote_plus(url)
 		return self.searchPagesDict(url)
 
-	'''Returns a dictionary with search results of 'search in specific section' '''
 	def searchInSectionPagesDict(self, context, query):
+		'''Returns a dictionary with search results of 'search in specific section' '''
 		url = '%s/search?original_id=%s&s=%s' % (self.URL, context, urllib.quote_plus(query))
 		return self.searchPagesDict(url)
 
-	'''Returns a dictionary with list of items containing search results and corresponding metadata'''
 	def searchPagesDict(self, url):
+		'''Returns a dictionary with list of items containing search results and corresponding metadata'''
 		videos = self.fetchData(url)
 		pagesList = []
 		for (image, link, title, comments) in re.compile(">(.+?)?<a href='(/view[\w\d\?=&/_,]+)'><b>(.+?)</b>(.+?)</td>", re.DOTALL).findall(videos):

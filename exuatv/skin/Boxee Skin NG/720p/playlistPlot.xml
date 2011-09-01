@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<window type="dialog" id="14101">
+	<defaultcontrol>1730</defaultcontrol>
+	<allowoverlay>no</allowoverlay>
+	<onload lang="python"><![CDATA[
+from exPlaylistController import explc
+explc.OnLoadPlaylistPlotDialog()
+]]>
+    </onload>
+	<controls>
+		<control type="group">
+			<posx>240</posx>
+			<posy>122</posy>
+			<control type="list" id="111">
+				<description>holder of single list item with description to show</description>
+				<visible>false</visible>
+				<posx>40</posx>
+				<posy>110</posy>
+				<width>720</width>
+				<height>240</height>
+				<onleft>-</onleft>
+				<onright>-</onright>
+				<onup>-</onup>
+				<ondown>1710</ondown>
+				<scrolltime>200</scrolltime>
+				<itemlayout width="720" height="40">
+					<control type="label">
+						<posx>20</posx>
+						<posy>0</posy>
+						<width>680</width>
+						<height>40</height>
+						<font>font22</font>
+						<aligny>center</aligny>
+						<textcolor>grey</textcolor>
+						<selectedcolor>grey</selectedcolor>
+						<align>left</align>
+						<info>ListItem.Label</info>
+					</control>
+				</itemlayout>
+				<focusedlayout width="720" height="40">
+					<control type="image">
+						<visible>Control.HasFocus(111)</visible>
+						<posx>0</posx>
+						<posy>0</posy>
+						<width>720</width>
+						<height>40</height>
+						<texture border="15">button_option_menu_on.png</texture>
+					</control>
+					<control type="label">
+						<posx>20</posx>
+						<posy>0</posy>
+						<width>680</width>
+						<height>40</height>
+						<font>font22b</font>
+						<aligny>center</aligny>
+						<textcolor>white</textcolor>
+						<selectedcolor>white</selectedcolor>
+						<align>left</align>
+						<info>ListItem.Label</info>
+						<scroll>true</scroll>
+						<scrollout>false</scrollout>
+						<scrollspeed>40</scrollspeed>
+						<pauseatend>4000</pauseatend>
+					</control>
+				</focusedlayout>
+				<content type="action">
+					<onclick lang="python"><![CDATA[]]></onclick>
+				</content>
+			</control>
+			<control type="group" id="1700">
+				<description>movies detailed description</description>
+				<visible>true</visible>
+				<posx>40</posx>
+				<posy>110</posy>
+				<control type="group" id="1710">
+					<control type="textbox" id="1720">
+						<posx>0</posx>
+						<posy>0</posy>
+						<width>720</width>
+						<height>320</height>
+						<font>font22</font>
+						<align>left</align>
+						<aligny>top</aligny>
+						<textcolor>white</textcolor>
+						<label>$INFO[Container(111).ListItem.property(description)]</label>
+						<wrapmultiline>true</wrapmultiline>
+						<pagecontrol>1730</pagecontrol>
+					</control>
+				</control>
+				<control type="scrollbar" id="1730">
+					<visible>Control.IsVisible(1700)</visible>
+					<posx>720</posx>
+					<posy>0</posy>
+					<width>28</width>
+					<height>320</height>
+					<texturesliderbackground>-</texturesliderbackground>
+					<textureslidernib>-</textureslidernib>
+					<textureslidernibfocus>-</textureslidernibfocus>
+					<texturesliderbar>-</texturesliderbar>
+					<texturesliderbarfocus>-</texturesliderbarfocus>
+					<orientation>vertical</orientation>
+					<showonepage>false</showonepage>
+					<onup>-</onup>
+					<ondown>-</ondown>
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>

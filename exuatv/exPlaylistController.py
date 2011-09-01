@@ -26,9 +26,14 @@ import xbmc
 class exPlaylistController:
 	# constants
 	WINDOW_ID = 14100
+	PLOT_WINDOW_ID = 14101
 	PLAYLIST_LIST_ID = 105
 	DIALOG_LABEL_ID = 106
-	ACTIONS_LIST_ID = 160
+	ACTIONS_GROUP_ID = 1500
+	ACTIONS_LIST_ID = 1510
+	OUTLINE_GROUP_ID = 1600
+	OUTLINE_TEXT_ID = 1620
+	OUTLINE_SCROLLER_ID = 1630
 
 	# Outlets section - accessors to dialog controls and labels
 	def GetPlaylistList(self):
@@ -47,8 +52,9 @@ class exPlaylistController:
 		videos = mc.ListItems()
 		for i in range(videoPlaylist.Size()):
 			playlistItem = videoPlaylist.GetItem(i)
-			item = mc.ListItem(mc.ListItem.MEDIA_VIDEO_OTHER)
+			item = mc.ListItem(mc.ListItem.MEDIA_VIDEO_EPISODE)
 			item.SetLabel(playlistItem.GetLabel())
+			item.SetDescription(playlistItem.GetDescription())
 			item.SetPath(playlistItem.GetPath())
 			videos.append(item)
 		self.GetPlaylistList().SetItems(videos)
@@ -74,7 +80,7 @@ class exPlaylistController:
 
 		self.GetActionsList().SetItems(actionItems)
 		mc.LogInfo("Select playlist window is loaded")
-
+	
 	def OnPlayListItemSelected(self):
 		mc.GetPlayer().PlaySelected(self.GetPlaylistList().GetFocusedItem(), mc.PlayList.PLAYLIST_VIDEO)
 
@@ -89,10 +95,16 @@ class exPlaylistController:
 			mc.LogInfo("selected action (%s) is not supported yet" % item.GetLabel());
 
 	def OnMoreInfoForItem(self, item):
-		pass
+		mc.ActivateWindow(self.PLOT_WINDOW_ID)
 
 	def OnAddItemToQueue(self, item):
 		pass
+
+	def OnLoadPlaylistPlotDialog(self):
+		items = mc.ListItems()
+		items.append(self.GetPlaylistList().GetItem(self.GetPlaylistList().GetFocusedItem()))
+		mc.GetWindow(self.PLOT_WINDOW_ID).GetList(111).SetItems(items)
+		mc.GetWindow(self.PLOT_WINDOW_ID).GetList(111).SetFocusedItem(0)
 
 #global ex controller instance accessible from playlistSelect.xml
 explc = exPlaylistController()
