@@ -61,8 +61,10 @@ class exmodel:
 
 	localizer = localizer()
 
-	def __init__(self, localizer):
+	def __init__(self, localizer, useGate = False):
 		self.localizer = localizer
+		if useGate:
+			self.URL = 'http://fex.net'
 
 	# Private methods
 	

@@ -13,9 +13,9 @@ exc.OnMainWindowLoad()
 	<include>BrowseLoadingAnimation</include>
 	<control type="button" id="510">
 		<description>Navigation focus helper(private)</description>
-		<!--visible>false</visible-->
-		<posx>-20</posx>
-		<posy>-20</posy>
+		<visible allowhiddenfocus="true">false</visible>
+		<posx>-100</posx>
+		<posy>-100</posy>
 		<width>10</width>
 		<height>10</height>
 		<onleft>310</onleft>
@@ -54,10 +54,11 @@ exc.OnMainWindowLoad()
 			<height>20</height>
 			<font>font14</font>
 			<textcolor>40FFFFFF</textcolor>
-			<label>v0.42</label>
+			<label>v0.43</label>
 		</control>
 	</control>
 	<control type="grouplist">
+		<visible>Control.IsVisible(100)</visible>
 		<posx>20</posx>
 		<posy>88</posy>
 		<width>200</width>
@@ -115,6 +116,7 @@ exc.OnMainWindowLoad()
 		</control>
 	</control>
 	<control type="grouplist" id="300">
+		<visible>Control.IsVisible(100)</visible>
 		<posx>975</posx>
 		<posy>88</posy>
 		<width>500</width>
@@ -198,6 +200,8 @@ exc.OnMainWindowLoad()
 		</control>
 	</control>
 	<control type="list" id="100">
+		<description>sections list container</description>
+		<visible>false</visible>
 		<posx>20</posx>
 		<posy>185</posy>
 		<width>200</width>

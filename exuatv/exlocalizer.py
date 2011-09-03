@@ -39,6 +39,8 @@ class exlocalizer(exmodel.localizer):
 		'Russian': {
 			'[B]Comments[/B]\n\n': '[B]Комментарии[/B]\n\n',
 			'Next': 'Далее',
+			'No access to www.ex.ua and fex.net': 'Нет доступа к www.ex.ua и fex.net',
+			'Please make sure you have proxy disabled and check access to www.ex.ua or fex.net in internet browser': 'Пожайлуста убедитесь что прокси выключен и проверте доступ к www.ex.ua или fex.net в интернет броузере',
 		},
 	}
 	language = 'English'

@@ -28,7 +28,8 @@ import exlocalizer
 class excontroller:
 	# private ivars
 	__exmodel = exmodel.exmodel(exlocalizer.exlocalizer())
-	
+
+	SECTIONS_LIST_ID = 100
 	PAGES_PANEL_ID = 200
 	SEARCH_ALL_ID = 310
 	SEARCH_ID = 320
@@ -141,7 +142,7 @@ class excontroller:
 		return self.GetListFocusedItem(self.GetPagesPanel())
 
 	def GetSectionsList(self):
-		return mc.GetActiveWindow().GetList(100)
+		return mc.GetActiveWindow().GetList(self.SECTIONS_LIST_ID)
 
 	def GetPagesPanel(self):
 		return mc.GetActiveWindow().GetList(self.PAGES_PANEL_ID)
@@ -246,15 +247,30 @@ class excontroller:
 		else:
 			return currentItem, None
 
+	def LoadSectionsList(self, loadAttempt = 1):
+		mc.ShowDialogWait()
+		sectionsList = self.__exmodel.sectionsList()
+		if 0 == len(sectionsList) and loadAttempt < 3:
+			mc.HideDialogWait()
+			self.__exmodel = exmodel.exmodel(exlocalizer.exlocalizer(), True)
+			sectionsList = self.LoadSectionsList(loadAttempt + 1)
+		mc.HideDialogWait()
+		return sectionsList
+
 	# Action handlers from UI controls
 	def OnMainWindowLoad(self):
 		# load sections menu if it is empty
 		mc.LogInfo("On Load Main Window")
 		if 0 == len(self.GetSectionsList().GetItems()):
 			mc.LogInfo("On Load: Generate sections menu")
-			mc.ShowDialogWait()
 			sectionsMenu = mc.ListItems()
-			sectionsList = self.__exmodel.sectionsList()
+			sectionsList = self.LoadSectionsList()
+			if 0 == len(sectionsList):
+				mc.LogInfo("Failed to load data from url: %s" % self.__exmodel.URL)
+				mc.ShowDialogOk(self.__exmodel.localizedString("No access to www.ex.ua and fex.net"), self.__exmodel.localizedString("Please make sure you have proxy disabled and check access to www.ex.ua or fex.net in internet browser"))
+				mc.GetApp().Close()
+				return
+			mc.ShowDialogWait()
 			# fill sections list with available items
 			for section in sectionsList:
 				item = mc.ListItem(mc.ListItem.MEDIA_UNKNOWN)
@@ -263,6 +279,7 @@ class excontroller:
 				sectionsMenu.append(item)
 			self.GetSectionsList().SetItems(sectionsMenu)
 			self.GetSectionsList().SetFocusedItem(0)
+			self.GetControl(self.SECTIONS_LIST_ID).SetVisible(True)
 			self.OnSectionSelected()
 			mc.HideDialogWait()
 		else:
