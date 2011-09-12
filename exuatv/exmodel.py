@@ -101,6 +101,8 @@ class exmodel:
 
 	def nextPageItem(self, videos):
 		next = re.compile("<td><a href='([\w\d\?=&/_]+)'><img src='/t2/arr_r.gif'").search(videos)
+		if None == next:
+			next = re.compile("<td><a href='(.+?)'><img src='/t2/arr_r.gif'").search(videos)
 		nextPageItem = {}
 		if next:
 			nextPageItem = {"name": self.localizedString("Next") + ' >>', "path": self.URL + next.group(1), "image": ''}

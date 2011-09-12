@@ -219,9 +219,17 @@ class excontroller:
 			#moving to next
 			navList.append(newCurrentNavItem)
 			if newNextNavItem: navList.append(newNextNavItem)
+		else:
+			#moving to back - add next in case if list has inly one item that represents current item
+			if len(navList) < 2 and newNextNavItem: navList.append(newNextNavItem)
 		self.GetNavigationContainer().SetItems(navList)
-		indexToFocus = len(navList) - 2
+		if newNextNavItem:
+			indexToFocus = len(navList) - 2
+		else:
+			indexToFocus = len(navList) - 1
 		if indexToFocus < 0: indexToFocus = 0
+		mc.LogInfo("focus index item: %s nav list len: %s" % (str(indexToFocus), str(len(navList))))
+
 		self.GetNavigationContainer().SetFocusedItem(indexToFocus)
 
 	def BuildCurrentAndNextItemsForLoadedPagesDict(self, sourceItem, pagesDict):
@@ -234,7 +242,7 @@ class excontroller:
 			currentItem.SetProperty("search", pagesDict["search"])
 		if sourceItem.GetProperty("isSearch"):
 			currentItem.SetProperty("isSearch", "true")
-
+		mc.LogInfo("current item: %s %s" % (currentItem.GetTitle(), currentItem.GetPath()))
 		if pagesDict.has_key("next"):
 			nextItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_CLIP)
 			nextEXItem = pagesDict["next"]
@@ -243,6 +251,7 @@ class excontroller:
 			nextItem.SetTitle(nextEXItem["name"])
 			if nextEXItem.has_key("isSearch"):
 				nextItem.SetProperty("isSearch", "true")
+			mc.LogInfo("next item: %s %s" % (nextItem.GetTitle(), nextItem.GetPath()))
 			return currentItem, nextItem
 		else:
 			return currentItem, None
