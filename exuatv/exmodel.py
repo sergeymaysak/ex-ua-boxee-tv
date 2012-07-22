@@ -143,7 +143,7 @@ class exmodel:
 			pagesList.append(nextPageItem)
 			pagesDict["next"] = nextPageItem
 		# detect seach context
-		context = re.search("/view/(\d+)", url)
+		context = re.compile("<input type=hidden name=original_id value='(\d+)'>").search(videos)
 		if None != context:
 			pagesDict["search"]= context.group(1)
 		return pagesDict
