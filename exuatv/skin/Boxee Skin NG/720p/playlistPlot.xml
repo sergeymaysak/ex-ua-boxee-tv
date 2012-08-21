@@ -3,8 +3,8 @@
 	<defaultcontrol>1730</defaultcontrol>
 	<allowoverlay>no</allowoverlay>
 	<onload lang="python"><![CDATA[
-from exPlaylistController import explc
-explc.OnLoadPlaylistPlotDialog()
+import exPlayer
+exPlayer.GetPlayer().playlistController.OnLoadPlaylistPlotDialog()
 ]]>
     </onload>
 	<controls>

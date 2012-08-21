@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 '''
 	exPlaylistController.py
 	exPlaylistController is a playlist selection dialog controler.
-	Copyright (C) 2011 Sergey Maysak a.k.a. sam
+	Copyright (C) 2011-2012 Sergey Maysak a.k.a. sam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -22,6 +23,7 @@ __date__ ="$Aug 31, 2011 1:11:47 AM$"
 
 import mc
 import xbmc
+import exPlayer
 
 class exPlaylistController:
 	# constants
@@ -58,8 +60,9 @@ class exPlaylistController:
 			item.SetPath(playlistItem.GetPath())
 			videos.append(item)
 		self.GetPlaylistList().SetItems(videos)
-		self.GetPlaylistList().SetFocusedItem(0)
-		self.GetPlaylistList().SetSelected(0, True)
+		index = exPlayer.GetPlayer().GetLastViewedEpisodeIndexInPlaylist()
+		self.GetPlaylistList().SetFocusedItem(index)
+		self.GetPlaylistList().SetSelected(index, True)
 		
 		dialogTitle = mc.GetLocalizedString(559) + ": " + videoPlaylist.GetItem(0).GetTitle()
 		self.GetDialogTitleLabel().SetLabel(dialogTitle)
@@ -82,7 +85,7 @@ class exPlaylistController:
 		mc.LogInfo("Select playlist window is loaded")
 	
 	def OnPlayListItemSelected(self):
-		mc.GetPlayer().PlaySelected(self.GetPlaylistList().GetFocusedItem(), mc.PlayList.PLAYLIST_VIDEO)
+		exPlayer.GetPlayer().PlayEpisode(self.GetPlaylistList().GetFocusedItem())
 
 	def OnAction(self):
 		index = self.GetActionsList().GetFocusedItem()
@@ -105,6 +108,3 @@ class exPlaylistController:
 		items.append(self.GetPlaylistList().GetItem(self.GetPlaylistList().GetFocusedItem()))
 		mc.GetWindow(self.PLOT_WINDOW_ID).GetList(111).SetItems(items)
 		mc.GetWindow(self.PLOT_WINDOW_ID).GetList(111).SetFocusedItem(0)
-
-#global ex controller instance accessible from playlistSelect.xml
-explc = exPlaylistController()

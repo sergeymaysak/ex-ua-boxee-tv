@@ -54,7 +54,7 @@ exc.OnMainWindowLoad()
 			<height>20</height>
 			<font>font14</font>
 			<textcolor>40FFFFFF</textcolor>
-			<label>v0.46</label>
+			<label>v0.47</label>
 		</control>
 	</control>
 	<control type="grouplist">
@@ -102,7 +102,7 @@ exc.OnMainWindowLoad()
 				<onright>200</onright>
 				<onup>310</onup>
 				<ondown>100</ondown>
-				<label>$LOCALIZE[13]</label>
+				<label>$LOCALIZE[14]</label>
 				<textcolor>grey</textcolor>
 				<focusedcolor>white</focusedcolor>
 				<texturenofocus border="20">button_option_menu.png</texturenofocus>
@@ -111,7 +111,7 @@ exc.OnMainWindowLoad()
 				<font>font21</font>
 				<align>center</align>
 				<aligny>center</aligny>
-				<onclick lang="python"><![CDATA[exc.OnFavorites()]]></onclick>
+				<onclick lang="python"><![CDATA[exc.OnRecentlyViewed()]]></onclick>
 			</control>
 		</control>
 	</control>

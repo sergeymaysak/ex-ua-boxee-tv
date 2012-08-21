@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 '''
 	excontroller.py
 	Definition of controller class mediating model and view layer
-	Copyright (C) 2011 Sergey Maysak a.k.a. sam
+	Copyright (C) 2011-2012 Sergey Maysak a.k.a. sam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -24,16 +25,22 @@ import mc
 import xbmc
 import exmodel
 import exlocalizer
+import exRecentlyViewedModel
+import exPlayer
+import tracker
 
-class excontroller:
-	# private ivars
-	__exmodel = exmodel.exmodel(exlocalizer.exlocalizer())
-
+class excontroller(exPlayer.exPlayerEventListener):
+	
 	SECTIONS_LIST_ID = 100
 	PAGES_PANEL_ID = 200
 	SEARCH_ALL_ID = 310
 	SEARCH_ID = 320
 
+	def __init__(self):
+		self.exmodel = exmodel.exmodel(exlocalizer.exlocalizer())
+		self.historyModel = exRecentlyViewedModel.exRecentlyViewedModel()
+		exPlayer.GetPlayer().listener = self
+		
 	def SavePagesFocusedItem(self):
 		currentNavItem = self.GetListFocusedItem(self.GetNavigationContainer())
 		currentNavItem.SetProperty("pagesFocusedIndex", str(self.GetPagesPanel().GetFocusedItem()))
@@ -75,6 +82,7 @@ class excontroller:
 		mc.ShowDialogNotification(mc.GetLocalizedString(53112))
 
 	def FixupNavigation(self):
+		mc.LogInfo("Playback FixupNavigation")
 		pagesList = self.GetPagesPanel().GetItems()
 		panelUrl = ''
 		if len(pagesList) > 0: panelUrl = pagesList[0].GetProperty("panelurl")
@@ -94,6 +102,13 @@ class excontroller:
 		# restore focused item in pages panel and in sections list
 		self.RestorePagesPanelFocusedItem()
 		self.RestoreSectionsFocusedItem()
+		# save last played item to history for case if player missed it in even loop
+		# such miss could happen if video playback was started with delay more then 4 sec
+		if exPlayer.GetPlayer().referenceItem != None:
+			mc.LogInfo("Playback: saving item to history from fixup: %s" % exPlayer.GetPlayer().referenceItem.GetLabel())
+			self.historyModel.SaveItem(exPlayer.GetPlayer().referenceItem)
+			exPlayer.GetPlayer().referenceItem = None
+
 
 	def FindIndexOfNavItemWithPanelUrl(self, panelUrl):
 		navItems = self.GetNavigationContainer().GetItems()
@@ -187,6 +202,10 @@ class excontroller:
 		listControl = self.GetNavigationContainer()
 		return listControl.GetItem(listControl.GetFocusedItem()).GetProperty("search")
 
+	def IsRecentlyViewedActive(self):
+		listControl = self.GetNavigationContainer()
+		return "history://" == listControl.GetItem(listControl.GetFocusedItem()).GetPath()
+
 	def StartNavNewSection(self, name, currentItem, nextItem):
 		mc.LogInfo("start new section navigation for name: %s" % name)
 		nav = mc.ListItems()
@@ -258,10 +277,10 @@ class excontroller:
 
 	def LoadSectionsList(self, loadAttempt = 1):
 		mc.ShowDialogWait()
-		sectionsList = self.__exmodel.sectionsList()
+		sectionsList = self.exmodel.sectionsList()
 		if 0 == len(sectionsList) and loadAttempt < 3:
 			mc.HideDialogWait()
-			self.__exmodel = exmodel.exmodel(exlocalizer.exlocalizer(), True)
+			self.exmodel = exmodel.exmodel(exlocalizer.exlocalizer(), True)
 			sectionsList = self.LoadSectionsList(loadAttempt + 1)
 		mc.HideDialogWait()
 		return sectionsList
@@ -271,12 +290,13 @@ class excontroller:
 		# load sections menu if it is empty
 		mc.LogInfo("On Load Main Window")
 		if 0 == len(self.GetSectionsList().GetItems()):
+			tracker.trackMainView('UA-25431823-1')
 			mc.LogInfo("On Load: Generate sections menu")
 			sectionsMenu = mc.ListItems()
 			sectionsList = self.LoadSectionsList()
 			if 0 == len(sectionsList):
-				mc.LogInfo("Failed to load data from url: %s" % self.__exmodel.URL)
-				mc.ShowDialogOk(self.__exmodel.localizedString("No access to www.ex.ua and fex.net"), self.__exmodel.localizedString("Please make sure you have proxy disabled and check access to www.ex.ua or fex.net in internet browser"))
+				mc.LogInfo("Failed to load data from url: %s" % self.exmodel.URL)
+				mc.ShowDialogOk(self.exmodel.localizedString("No access to www.ex.ua and fex.net"), self.exmodel.localizedString("Please make sure you have proxy disabled and check access to www.ex.ua or fex.net in internet browser"))
 				mc.GetApp().Close()
 				return
 			mc.ShowDialogWait()
@@ -294,6 +314,8 @@ class excontroller:
 		else:
 			mc.LogInfo("Main Window Re-load")
 			self.FixupNavigation()
+			if self.IsRecentlyViewedActive():
+				self.ReloadRecentlyViewedSection()
 
 	def OnSectionSelected(self):
 		mc.GetActiveWindow().ClearStateStack(False)
@@ -306,9 +328,9 @@ class excontroller:
 		mc.LogInfo("url to load: %s" % url)
 		mc.ShowDialogWait()
 		if listItem.GetProperty("isSearch"):
-			pagesDict = self.__exmodel.searchPagesDict(url)
+			pagesDict = self.exmodel.searchPagesDict(url)
 		else:
-			pagesDict = self.__exmodel.pagesDict(url)
+			pagesDict = self.exmodel.pagesDict(url)
 		listItems = self.BuildPanelItemsList(pagesDict)
 		currentNavItem, nextNavItem = self.BuildCurrentAndNextItemsForLoadedPagesDict(listItem, pagesDict)
 		if pushState is True:
@@ -324,37 +346,43 @@ class excontroller:
 		query = mc.ShowDialogKeyboard(mc.GetLocalizedString(137) + " EX.UA", "", False)
 		if 0 != len(query):
 			mc.LogInfo("string to search: %s" % query)
-			pagesDict = self.__exmodel.searchAllPagesDict(query)
-			listItems = exc.BuildPanelItemsList(pagesDict)
-			listItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_CLIP)
-			listItem.SetLabel(mc.GetLocalizedString(283) + ': ' + query)
-			listItem.SetPath(pagesDict["url"])
-			listItem.SetProperty("isSearch", "true")
-			currentNavItem, nextNavItem = self.BuildCurrentAndNextItemsForLoadedPagesDict(listItem, pagesDict)
-			# start new section for search
-			self.SaveWindowState()
-			self.StartNavNewSection(listItem.GetLabel(), currentNavItem, nextNavItem)
-			self.GetPagesPanel().SetItems(listItems)
+			pagesDict = self.exmodel.searchAllPagesDict(query)
+			self.UpdatePagesPanelWithSearchResults(query, pagesDict)
 
 	def OnSearchInActiveSection(self):
 		if self.GetNavSearchContext():
 			query = mc.ShowDialogKeyboard(mc.GetLocalizedString(137) + " " + mc.GetLocalizedString(1405) + " " + self.GetNavSectionName(), "", False)
 			if 0 != len(query):
-				pagesDict = self.__exmodel.searchInSectionPagesDict(self.GetNavSearchContext(), query)
-				listItems = exc.BuildPanelItemsList(pagesDict)
-				listItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_CLIP)
-				listItem.SetLabel(mc.GetLocalizedString(283) + ': ' + query)
-				listItem.SetPath(pagesDict["url"])
-				listItem.SetProperty("isSearch", "true")
-				currentNavItem, nextNavItem = self.BuildCurrentAndNextItemsForLoadedPagesDict(listItem, pagesDict)
-				# start new section for search
-				self.SaveWindowState()
-				self.StartNavNewSection(listItem.GetLabel(), currentNavItem, nextNavItem)
-				self.GetPagesPanel().SetItems(listItems)
-	
-	def OnFavorites(self):
-		mc.ShowDialogOk("User favorites", "Not implemented yet")
-		#mc.ActivateWindow(14028)
+				pagesDict = self.exmodel.searchInSectionPagesDict(self.GetNavSearchContext(), query)
+				self.UpdatePagesPanelWithSearchResults(query, pagesDict)
+		else:
+			mc.LogInfo("No search context present - unable to perform search in active section")
+
+	def UpdatePagesPanelWithSearchResults(self, query, pagesDict):
+		listItems = exc.BuildPanelItemsList(pagesDict)
+		listItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_CLIP)
+		listItem.SetLabel(mc.GetLocalizedString(283) + ': ' + query)
+		listItem.SetPath(pagesDict["url"])
+		listItem.SetProperty("isSearch", "true")
+		currentNavItem, nextNavItem = self.BuildCurrentAndNextItemsForLoadedPagesDict(listItem, pagesDict)
+		# start new section for search
+		self.SaveWindowState()
+		self.StartNavNewSection(listItem.GetLabel(), currentNavItem, nextNavItem)
+		self.GetPagesPanel().SetItems(listItems)
+
+	def OnRecentlyViewed(self):
+		if not self.IsRecentlyViewedActive():
+			listItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_CLIP)
+			listItem.SetLabel(self.exmodel.localizedString("Recently Viewed"))
+			listItem.SetPath("history://")
+			self.SaveWindowState()
+			self.StartNavNewSection(listItem.GetLabel(), listItem, None)
+		self.ReloadRecentlyViewedSection()
+
+	def ReloadRecentlyViewedSection(self):
+		listItems = self.historyModel.GetHistoryItemsList()
+		self.GetPagesPanel().SetItems(listItems)
+		self.GetPagesPanel().SetFocusedItem(0)
 
 	def OnBack(self):
 		if self.GetPreviousNavItem():
@@ -368,6 +396,7 @@ class excontroller:
 			self.OnLoadSectionPages(self.GetNavNextPageItem(), False, False, True)
 
 	def GetPlayableItemForItemInDict(self, item, playDict):
+		mc.LogInfo("Flow: Created item of type MEDIA_VIDEO_OTHER")
 		type = mc.ListItem.MEDIA_VIDEO_OTHER
 		playItem = mc.ListItem(type)
 		playItem.SetThumbnail(playDict["image"])
@@ -379,46 +408,42 @@ class excontroller:
 		playItem.SetPath(item["path"])
 		return playItem
 
-	def IsItemPointsToTrailer(self, itemDict):
-		names = ["trailer", "sample", "трейлер"]
+	def DoesItemPointToTrailer(self, itemDict):
+		names = ['trailer', 'sample', 'трейлер']
 		name, ext = os.path.splitext(itemDict["name"])
 		if name.lower() in names:
 			return True
 		return False
 
-	def IsPlaylistContainsTrailer(self, playItemsList):
+	def DoesPlaylistContainTrailer(self, playItemsList):
 		for item in playItemsList:
-			if self.IsItemPointsToTrailer(item):
+			if self.DoesItemPointToTrailer(item):
 				return True
 		return False
 
 	def GetFullMovieItemFromList(self, playItemsList):
 		for item in playItemsList:
-			if False == self.IsItemPointsToTrailer(item):
+			if False == self.DoesItemPointToTrailer(item):
 				return item
 		return playItemsList[0]
 
-	def RunPlayerForItemsFromDict(self, playDict):
+	def RunPlayerForItemsFromDict(self, sourcePageItem, playDict):
 		exPlayitemsList = playDict["playitems"]
 		if 1 == len(exPlayitemsList):
 			exItem = exPlayitemsList[0]
 			playItem = self.GetPlayableItemForItemInDict(exItem, playDict)
-			mc.GetPlayer().PlayWithActionMenu(playItem)
-		elif 2 == len(exPlayitemsList) and self.IsPlaylistContainsTrailer(exPlayitemsList):
+			exPlayer.GetPlayer().PlayItemWithMenu(playItem, sourcePageItem)
+		elif 2 == len(exPlayitemsList) and self.DoesPlaylistContainTrailer(exPlayitemsList):
 			exItem = self.GetFullMovieItemFromList(exPlayitemsList)
 			playItem = self.GetPlayableItemForItemInDict(exItem, playDict)
-			mc.GetPlayer().PlayWithActionMenu(playItem)
+			exPlayer.GetPlayer().PlayItemWithMenu(playItem, sourcePageItem)
 		else:
-			videoPlaylist = mc.PlayList(mc.PlayList.PLAYLIST_VIDEO)
-			videoPlaylist.Clear()
+			eposodesList = mc.ListItems()
 			for theItem in exPlayitemsList:
 				playItem = self.GetPlayableItemForItemInDict(theItem, playDict)
 				playItem.SetLabel(theItem["name"])
-				mc.LogInfo("added to playlist item with name: %s" % theItem["name"])
-				videoPlaylist.Add(playItem)
-			#show playlist selection dialog (playlistSelect.xml)
-			mc.ActivateWindow(14100)
-			mc.LogInfo("show playlist selection dialog called")
+				eposodesList.append(playItem)
+			exPlayer.GetPlayer().PlayEpisodesWithMenu(sourcePageItem, eposodesList)
 
 	def OnPageClick(self):
 		focusedItem = self.GetPagesFocusedItem()
@@ -426,10 +451,10 @@ class excontroller:
 		self.SaveSectionsFocusedItem()
 		url = focusedItem.GetPath()
 		mc.ShowDialogWait()
-		playDict = self.__exmodel.pagePlaylistDict({"url": url})
+		playDict = self.exmodel.pagePlaylistDict({"url": url})
 		mc.HideDialogWait()
 		if playDict.has_key("playitems"):
-			self.RunPlayerForItemsFromDict(playDict)
+			self.RunPlayerForItemsFromDict(focusedItem, playDict)
 		else:
 			if self.GetNavNextPageItem() and self.GetNavNextPageItem().GetPath() == url:
 				# go to next manually to not push window state
@@ -437,6 +462,22 @@ class excontroller:
 			else:
 				#we have link to dig into with pushing window state
 				self.OnLoadSectionPages(focusedItem, True, True, True)
+
+	# playback listener adoption
+	def onPlaybackStarted(self, exPlayer, playItem):
+		mc.LogInfo("Playback started for item: %s" % playItem.GetLabel())
+		#self.historyModel.SaveItem(playItem)
+
+	def onPlaybackStopped(self, exPlayer, playItem, time):
+		mc.LogInfo("Playback stopped for item: %s at time: %s" % (playItem.GetLabel(), str(time)))
+		# update saved item with sto time
+		self.historyModel.SaveItem(playItem)
+		exPlayer.referenceItem = None
+
+	def onPlaybackEnded(self, exPlayer, playItem):
+		mc.LogInfo("Playback ended for item: %s" % playItem.GetLabel())
+		self.historyModel.SaveItem(playItem)
+		exPlayer.referenceItem = None
 
 #global ex controller instance accessible from main.xml
 exc = excontroller()

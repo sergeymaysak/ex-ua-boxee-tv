@@ -3,8 +3,8 @@
 	<defaultcontrol>105</defaultcontrol>
 	<allowoverlay>no</allowoverlay>
 	<onload lang="python"><![CDATA[
-from exPlaylistController import explc
-explc.OnDialogLoad()
+import exPlayer
+exPlayer.GetPlayer().playlistController.OnDialogLoad()
 ]]>
     </onload>
 	<controls>
@@ -101,7 +101,7 @@ explc.OnDialogLoad()
 					</control>
 				</focusedlayout>
 				<content type="action">
-					<onclick lang="python"><![CDATA[explc.OnPlayListItemSelected()]]></onclick>
+					<onclick lang="python"><![CDATA[exPlayer.GetPlayer().playlistController.OnPlayListItemSelected()]]></onclick>
 				</content>
 			</control>
 			<control type="group" id="1500">
@@ -173,7 +173,7 @@ explc.OnDialogLoad()
 						</control>
 					</focusedlayout>
 					<content type="action">
-						<onclick lang="python"><![CDATA[explc.OnAction()]]></onclick>
+						<onclick lang="python"><![CDATA[exPlayer.GetPlayer().playlistController.OnAction()]]></onclick>
 					</content>
 				</control>
 			</control>

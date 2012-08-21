@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 '''
 	exlocalizer.py
 	exlocalizer provides runtime accessible localized strings
-	Copyright (C) 2011 Sergey Maysak a.k.a. sam
+	Copyright (C) 2011-2012 Sergey Maysak a.k.a. sam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -35,15 +36,15 @@ read in code.
 Principal method is localizedString.
 '''
 class exlocalizer(exmodel.localizer):
-	localizations = {
+	LOCALIZATIONS = {
 		'Russian': {
 			'[B]Comments[/B]\n\n': '[B]Комментарии[/B]\n\n',
 			'Next': 'Далее',
 			'No access to www.ex.ua and fex.net': 'Нет доступа к www.ex.ua и fex.net',
 			'Please make sure you have proxy disabled and check access to www.ex.ua or fex.net in internet browser': 'Пожайлуста убедитесь что прокси выключен и проверте доступ к www.ex.ua или fex.net в интернет броузере',
+			'Recently Viewed':'Недавно просмотренное',
 		},
 	}
-	language = 'English'
 
 	def __init__(self):
 		self.language = xbmc.getLanguage()
@@ -51,6 +52,6 @@ class exlocalizer(exmodel.localizer):
 
 	def localizedString(self, text):
 		try:
-			return self.localizations[self.language][text]
+			return self.LOCALIZATIONS[self.language][text]
 		except:
 			return text

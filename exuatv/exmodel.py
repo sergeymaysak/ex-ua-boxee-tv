@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 '''
 	exmodel.py
 	Definition of class representing model (in MVC) of ex.ua
-	Copyright (C) 2011 Sergey Maysak a.k.a. sam
+	Copyright (C) 2011-2012 Sergey Maysak a.k.a. sam
 	Based on original work of Vadim Skorba (vadim.skorba@gmail.com)
 
 	This program is free software: you can redistribute it and/or modify
@@ -19,6 +20,8 @@
 '''
 __author__="sam"
 __date__ ="$Jul 30, 2011 6:09:45 PM$"
+
+import mc
 
 import sys
 import os
@@ -39,7 +42,6 @@ class localizer:
 
 class exmodel:
 	'''exmodel acts as a data model provider performing loading data from ex.ua'''
-	URL = 'http://www.ex.ua'
 	USERAGENT = "Mozilla/5.0 (Windows NT 6.1; rv:5.0) Gecko/20100101 Firefox/5.0"
 	ROWCOUNT = (15, 30, 50, 100)[1]
 	LANGUAGE = ('ru', 'uk', 'en')[0]
@@ -59,12 +61,12 @@ class exmodel:
 		('&nbsp;', ' '),
 	)
 
-	localizer = localizer()
-
 	def __init__(self, localizer, useGate = False):
 		self.localizer = localizer
 		if useGate:
 			self.URL = 'http://fex.net'
+		else:
+			self.URL = 'http://www.ex.ua'
 
 	# Private methods
 	
@@ -83,6 +85,7 @@ class exmodel:
 
 	def fetchData(self, url):
 		try:
+			mc.LogInfo("Fetching data for url: %s" % url)
 			request = urllib2.Request(url)
 			request.add_header('User-Agent', self.USERAGENT)
 			#if self.__settings__.getSetting("auth"):
@@ -96,7 +99,7 @@ class exmodel:
 			connection.close()
 			return (result)
 		except urllib2.HTTPError, e:
-			print self + " fetchData(" + url + ") exception: " + str(e)
+			mc.LogInfo(self + " fetchData(" + url + ") exception: " + str(e))
 			return
 
 	def nextPageItem(self, videos):
@@ -106,6 +109,7 @@ class exmodel:
 		nextPageItem = {}
 		if next:
 			nextPageItem = {"name": self.localizedString("Next") + ' >>', "path": self.URL + next.group(1), "image": ''}
+			mc.LogInfo("next found: %s" % nextPageItem["path"])
 		return nextPageItem
 
 	def sectionsList(self):
