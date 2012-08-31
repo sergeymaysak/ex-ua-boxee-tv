@@ -2,7 +2,7 @@
 '''
 	exmodel.py
 	Definition of class representing model (in MVC) of ex.ua
-	Copyright (C) 2011-2012 Sergey Maysak a.k.a. sam
+	Copyright (C) 2011 Sergey Maysak a.k.a. sam
 	Based on original work of Vadim Skorba (vadim.skorba@gmail.com)
 
 	This program is free software: you can redistribute it and/or modify
@@ -106,6 +106,8 @@ class exmodel:
 		next = re.compile("<td><a href='([\w\d\?=&/_]+)'><img src='/t2/arr_r.gif'").search(videos)
 		if None == next:
 			next = re.compile("<td><a href='(.+?)'><img src='/t2/arr_r.gif'").search(videos)
+		if None == next:
+			next = re.compile("<link rel=\"next\" id=\"browse_next\" href=\"(.+?)\">").search(videos)
 		nextPageItem = {}
 		if next:
 			nextPageItem = {"name": self.localizedString("Next") + ' >>', "path": self.URL + next.group(1), "image": ''}
@@ -116,7 +118,6 @@ class exmodel:
 		'''Returns a list of available video sections'''
 		sectionsList = list()
 		sections = self.fetchData("%s/%s/video" % (self.URL, self.LANGUAGE))
-		# for (link, sectionName, count) in re.compile("<a href='(/view/.+?)'><b>(.+?)</b></a><p><a href='/view/.+?' class=info>.+?: (\d+)</a>").findall(sections):
 		for (link, sectionName, count) in re.compile("<a href='(.+?)'><b>(.+?)</b></a><p><a href='.+?' class=info>.+?: (\d+)</a>").findall(sections):
 			sectionsList.append({"name": sectionName, "path": str(self.URL + link)})
 		return sectionsList
@@ -137,7 +138,7 @@ class exmodel:
 				comments = " [%s]" % re.sub('.+?>(.+?)</a>', '\g<1>', comments)
 			pagesList.append({"name": self.unescape(title + comments), "path": self.URL + link, "image": image + '?200'})
 		# find current subsection name
-		pagesName = re.compile("<font color=#808080><b>(\d+\.\.\d+)</b>").search(videos)
+		pagesName = re.compile("<font color=#808080><b>(.+?)</b>").search(videos)
 		pagesDict = {"pages": pagesList, "url": url}
 		if pagesName:
 			pagesDict["paging"] = pagesName.group(1)
