@@ -54,7 +54,7 @@ exc.OnMainWindowLoad()
 			<height>20</height>
 			<font>font14</font>
 			<textcolor>40FFFFFF</textcolor>
-			<label>v0.48</label>
+			<label>v0.5</label>
 		</control>
 	</control>
 	<control type="grouplist">
@@ -440,7 +440,7 @@ exc.OnMainWindowLoad()
 						<posy>-8</posy>
 						<width>160</width>
 						<height>208</height>
-						<bordertexture border="20">masks/thumb_background_on.png</bordertexture>
+						<bordertexture border="20">masks/thumb_back_on.png</bordertexture>
 						<bordersize>20</bordersize>
 						<texture blend="false">$INFO[ListItem.Thumb]</texture>
 						<aspectratio scalediffuse="false">scale</aspectratio>
@@ -456,7 +456,7 @@ exc.OnMainWindowLoad()
 						<posy>-8</posy>
 						<width>160</width>
 						<height>208</height>
-						<bordertexture border="20">masks/thumb_background_on.png</bordertexture>
+						<bordertexture border="20">masks/thumb_back_on.png</bordertexture>
 						<bordersize>20</bordersize>
 						<texture>black.png</texture>
 						<fadetime>200</fadetime>

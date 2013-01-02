@@ -37,7 +37,7 @@ class excontroller(exPlayer.exPlayerEventListener):
 	SEARCH_ID = 320
 
 	def __init__(self):
-		self.exmodel = exmodel.exmodel(exlocalizer.exlocalizer())
+		self.exmodel = exmodel.exmodel(exlocalizer.GetSharedLocalizer())
 		self.historyModel = exRecentlyViewedModel.exRecentlyViewedModel()
 		exPlayer.GetPlayer().listener = self
 		
@@ -101,14 +101,9 @@ class excontroller(exPlayer.exPlayerEventListener):
 			self.GetControl(controlIDToFocus).SetFocus()
 		# restore focused item in pages panel and in sections list
 		self.RestorePagesPanelFocusedItem()
-		self.RestoreSectionsFocusedItem()
-		# save last played item to history for case if player missed it in even loop
-		# such miss could happen if video playback was started with delay more then 4 sec
+		self.RestoreSectionsFocusedItem()		
 		if exPlayer.GetPlayer().referenceItem != None:
-			mc.LogInfo("Playback: saving item to history from fixup: %s" % exPlayer.GetPlayer().referenceItem.GetLabel())
-			self.historyModel.SaveItem(exPlayer.GetPlayer().referenceItem)
 			exPlayer.GetPlayer().referenceItem = None
-
 
 	def FindIndexOfNavItemWithPanelUrl(self, panelUrl):
 		navItems = self.GetNavigationContainer().GetItems()
@@ -396,16 +391,18 @@ class excontroller(exPlayer.exPlayerEventListener):
 			self.OnLoadSectionPages(self.GetNavNextPageItem(), False, False, True)
 
 	def GetPlayableItemForItemInDict(self, item, playDict):
-		mc.LogInfo("Flow: Created item of type MEDIA_VIDEO_OTHER")
-		type = mc.ListItem.MEDIA_VIDEO_OTHER
+		mc.LogInfo("Flow: Created item of type MEDIA_VIDEO_FEATURE_FILM")
+		#mc.LogInfo("playDict image: %s" % playDict["image"])
+		type = mc.ListItem.MEDIA_VIDEO_FEATURE_FILM
 		playItem = mc.ListItem(type)
 		playItem.SetThumbnail(playDict["image"])
-		#playItem.SetIcon(exPlaylistDict["image"])
-		#playItem.SetImage(0, exPlaylistDict["image"])
-		playItem.SetTitle(playDict["title"])		
+		#playItem.SetIcon(playDict["image"])
+		#playItem.SetImage(0, playDict["image"])
+		playItem.SetTitle(playDict["title"])
 		playItem.SetDescription(playDict["description"])
 		playItem.SetLabel(playDict["title"])
 		playItem.SetPath(item["path"])
+		
 		return playItem
 
 	def DoesItemPointToTrailer(self, itemDict):
@@ -466,7 +463,7 @@ class excontroller(exPlayer.exPlayerEventListener):
 	# playback listener adoption
 	def onPlaybackStarted(self, exPlayer, playItem):
 		mc.LogInfo("Playback started for item: %s" % playItem.GetLabel())
-		#self.historyModel.SaveItem(playItem)
+		self.historyModel.SaveItem(playItem)
 
 	def onPlaybackStopped(self, exPlayer, playItem, time):
 		mc.LogInfo("Playback stopped for item: %s at time: %s" % (playItem.GetLabel(), str(time)))

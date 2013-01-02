@@ -24,11 +24,12 @@ __author__="sam"
 __date__ ="$Sep 17, 2011 10:48:49 PM$"
 
 import mc
+import pickle
 
 class exRecentlyViewedModel:
 
 	def __init__(self):
-		self.historyItems = list()
+		self.historyItems = self.RestoreFromDefaults()
 
 	def SaveItem(self, item):
 		mc.LogInfo("saving item: %s" % item.GetLabel())
@@ -44,6 +45,7 @@ class exRecentlyViewedModel:
 		if len(self.historyItems) > 25:
 			self.historyItems.pop()
 		mc.LogInfo("number of saved items: %s" % str(len(self.historyItems)))
+		self.StoreToDefaults()
 
 	def GetHistoryItemsList(self):
 		list = mc.ListItems()
@@ -56,3 +58,44 @@ class exRecentlyViewedModel:
 			if i.GetPath() == item.GetPath():
 				return i
 		return None
+
+	def StoreToDefaults(self):
+		listToStore = []
+		for item in self.historyItems:
+			theDict = {"path" : item.GetPath(), "title" : item.GetLabel()}
+			theDict["description"] = item.GetDescription()
+			theDict["image"] = item.GetThumbnail()
+			if item.GetProperty("timeToResume"):
+				theDict["timeToResume"] = str(item.GetProperty("timeToResume"))
+			if item.GetProperty("lastViewedEpisodeIndex"):
+				theDict["lastViewedEpisodeIndex"] = str(item.GetProperty("lastViewedEpisodeIndex"))
+			listToStore.append(theDict);
+
+		stringRep = pickle.dumps(listToStore)
+		if stringRep != None:
+			mc.GetApp().GetLocalConfig().SetValue("history-items", stringRep)
+
+	def RestoreFromDefaults(self):
+		stringRep = mc.GetApp().GetLocalConfig().GetValue("history-items")
+		if len(stringRep) > 0:
+			#mc.LogInfo("string representation of items: %s" % stringRep)
+			listLoaded = pickle.loads(stringRep)
+			list = []
+			for item in listLoaded:
+				type = mc.ListItem.MEDIA_VIDEO_FEATURE_FILM
+				playItem = mc.ListItem(type)
+				playItem.SetThumbnail(item["image"])				
+				playItem.SetTitle(item["title"])
+				playItem.SetDescription(item["description"])
+				playItem.SetLabel(item["title"])
+				playItem.SetPath(item["path"])
+				if item.has_key("timeToResume"):
+					playItem.SetProperty("timeToResume", item["timeToResume"])
+				if item.has_key("lastViewedEpisodeIndex"):
+					playItem.SetProperty("lastViewedEpisodeIndex", item["lastViewedEpisodeIndex"])
+				list.append(playItem)
+
+			return list
+
+		else:
+			return []

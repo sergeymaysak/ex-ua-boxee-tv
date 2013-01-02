@@ -36,6 +36,7 @@ class exPlaylistController:
 	OUTLINE_GROUP_ID = 1600
 	OUTLINE_TEXT_ID = 1620
 	OUTLINE_SCROLLER_ID = 1630
+	FINEART_IMAGE_ID = 2000
 
 	# Outlets section - accessors to dialog controls and labels
 	def GetPlaylistList(self):
@@ -46,6 +47,9 @@ class exPlaylistController:
 
 	def GetActionsList(self):
 		return mc.GetWindow(self.WINDOW_ID).GetList(self.ACTIONS_LIST_ID)
+
+	def GetFineArtImage(self):
+		return mc.GetWindow(self.WINDOW_ID).GetImage(self.FINEART_IMAGE_ID)
 
 	def OnDialogLoad(self):
 		# external caller is responsible to prepare shared boxee video playlist
@@ -66,6 +70,9 @@ class exPlaylistController:
 		
 		dialogTitle = mc.GetLocalizedString(559) + ": " + videoPlaylist.GetItem(0).GetTitle()
 		self.GetDialogTitleLabel().SetLabel(dialogTitle)
+		
+		mc.LogInfo("Playlist thumbnail: %s" % videoPlaylist.GetItem(0).GetThumbnail())
+		self.GetFineArtImage().SetTexture(videoPlaylist.GetItem(0).GetThumbnail())
 
 		# fill up actions buttons list
 		actionItems = mc.ListItems()
@@ -76,8 +83,8 @@ class exPlaylistController:
 		actionItems.append(actionItem)
 
 		actionItem = mc.ListItem(mc.ListItem.MEDIA_UNKNOWN)
-		# localize with 'add to queue/watch later'
-		actionItem.SetLabel(mc.GetLocalizedString(53711))
+		# localize with 'add to favorites'
+		actionItem.SetLabel(mc.GetLocalizedString(53729))
 		actionItem.SetThumbnail('action_queue_add.png')
 		actionItems.append(actionItem)
 
@@ -93,14 +100,16 @@ class exPlaylistController:
 		if 0 == index:
 			self.OnMoreInfoForItem(item)
 		elif 1 == index:
-			self.OnAddItemToQueue(item)
+			self.OnToggleFavorites(item)
 		else:
 			mc.LogInfo("selected action (%s) is not supported yet" % item.GetLabel());
 
+	# shows item complete description (movie plot and other details)
 	def OnMoreInfoForItem(self, item):
 		mc.ActivateWindow(self.PLOT_WINDOW_ID)
 
-	def OnAddItemToQueue(self, item):
+	# toggle add/remove item to/from favorites
+	def OnToggleFavorites(self, item):
 		pass
 
 	def OnLoadPlaylistPlotDialog(self):

@@ -118,8 +118,17 @@ class exmodel:
 		'''Returns a list of available video sections'''
 		sectionsList = list()
 		sections = self.fetchData("%s/%s/video" % (self.URL, self.LANGUAGE))
+		#for (link, sectionName, count) in re.compile("<a href='(/view/.+?)'><b>(.+?)</b></a><p><a href='/view/.+?' class=info>.+?: (\d+)</a>").findall(sections):
 		for (link, sectionName, count) in re.compile("<a href='(.+?)'><b>(.+?)</b></a><p><a href='.+?' class=info>.+?: (\d+)</a>").findall(sections):
 			sectionsList.append({"name": sectionName, "path": str(self.URL + link)})
+		#move megogo.net to the end
+		itemToMoveToBack = None
+		for section in sectionsList:
+			if section["name"].startswith('MEGOGO.NET'):
+				itemToMoveToBack = section
+				sectionsList.remove(section)
+		if None != itemToMoveToBack:
+			sectionsList.append(itemToMoveToBack)
 		return sectionsList
 
 	def pagesDict(self, url):
@@ -148,9 +157,12 @@ class exmodel:
 			pagesList.append(nextPageItem)
 			pagesDict["next"] = nextPageItem
 		# detect seach context
+		mc.LogInfo("search for context in url %s" % url)
+		#context = re.search("(\d+)", url)
 		context = re.compile("<input type=hidden name=original_id value='(\d+)'>").search(videos)
 		if None != context:
 			pagesDict["search"]= context.group(1)
+			mc.LogInfo("search context is %s" % context.group(1))
 		return pagesDict
 
 	def playItemsList(self, playlist, content):
@@ -172,15 +184,15 @@ class exmodel:
 			if  m3uPlaylistUrl:
 				m3uPlaylist = re.compile(".*/get/(\d+).*").findall(self.fetchData(self.URL + m3uPlaylistUrl.group(1) + '.m3u'))
 				playlistDict["playitems"] = self.playItemsList(m3uPlaylist, content)
-			image = re.compile("<img.*?src='(.+?\.jpg)\?800'.+?>").search(content)
+			image = re.compile("<img src='(http.+?(\?800|\?1600))'").search(details.group(1))
 			if image:
-				image = image.group(1) + '?200'
+				image = image.group(1)
 			else:
 				image = ''
 			playlistDict["image"] = image
 			title = details.group(2)
 			description = str()
-			description += details.group(3).replace('смотреть онлайн', '')
+			description += details.group(3).replace('—Å–º–æ—Ç—Ä–µ—Ç—å –æ–Ω–ª–∞–π–Ω', '')
 			comments = re.compile("<a href='(/view_comments/\d+).+?(\d+)</a>").search(content)
 			if comments:
 				description += self.localizedString('[B]Comments[/B]\n\n')

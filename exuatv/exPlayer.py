@@ -4,7 +4,7 @@
 	Player is responsible to play media - extends mc.Player with functinality
 	absent in it - resume of item from stopped time and "play playlist with
 	options dialog". Based on idea of MyPlayer from bartsidee.
-	Copyright (C) 2011-2012 Sergey Maysak a.k.a. sam
+	Copyright (C) 2011 Sergey Maysak a.k.a. sam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -27,6 +27,9 @@ import xbmc
 import mc
 import exPlaylistController
 import time
+import threading
+import exVideoResumeDialog
+import exPlayMediaDialogController
 
 class exPlayerEventListener:
 	''' Interface of player event listener. Any method is optional for
@@ -54,6 +57,8 @@ class exPlayer(mc.Player):
 	def __init__(self):
 		mc.Player.__init__(self, True)
 		self.playlistController = exPlaylistController.exPlaylistController()
+		self.exVideoResumeDialog = exVideoResumeDialog.exVideoResumeDialog()
+		self.playMediaController = exPlayMediaDialogController.exPlayMediaDialogController()
 		self.last = self.GetLastPlayerEvent()
 		self.referenceItem = None
 		self.listener = None
@@ -64,10 +69,20 @@ class exPlayer(mc.Player):
             self.EVENT_STARTED : self.onPlayBackStarted
 			}
 
+	def lastEventDescription(self):
+		if self.last == self.EVENT_STARTED: return "event_started"
+		elif self.last == self.EVENT_ENDED: return "event_ended"
+		elif self.last == self.EVENT_STOPPED: return "event_stopped"
+		elif self.last == self.EVENT_NONE: return "event_none"
+		elif self.last == self.EVENT_NEXT_ITEM: return "event_next_item"
+		else: return "unknown_event"
+
 	def runEventLoop(self):
 		mc.LogInfo("Playback event monitoring started")
-		self.last = self.GetLastPlayerEvent()
+		#mc.LogInfo("player last event %s" % self.lastEventDescription())
 		self.time = 0.000
+		self.last = self.GetLastPlayerEvent()
+		#mc.LogInfo("player last event %s" % self.lastEventDescription())
 		while True:
 			event = self.GetLastPlayerEvent()
 			if event != self.last:
@@ -77,53 +92,71 @@ class exPlayer(mc.Player):
 					if event in [self.EVENT_ENDED, self.EVENT_STOPPED]:
 						mc.LogInfo("Playback event monitoring stopped")
 						break
-			elif event == self.EVENT_STARTED:
-				try: self.time = self.GetTime()
-				except: mc.LogInfo("Player not ready")
+			try: self.time = self.GetTime()
+			except:
+				mc.LogInfo("Player not ready")
+				if (self.last == self.EVENT_STARTED):
+					break
+			#mc.LogInfo("Time updated to %s" % str(self.time))
+			#mc.LogInfo("player last event %s" % self.lastEventDescription())
 			xbmc.sleep(5000)
 	
 	def onPlayBackStarted(self, **kwargs):
-		if self.referenceItem.GetProperty("timeToResume"):
-			timeToResume = float(self.referenceItem.GetProperty("timeToResume"))
-			mc.LogInfo("Playback resuming to time: %s" % str(timeToResume))
-			self.SeekTime(timeToResume)
 		if self.listener: self.listener.onPlaybackStarted(self, self.referenceItem)
 	
 	def onPlayBackEnded(self):
 		if self.listener:
-			self.referenceItem.SetProperty("timeToResume", str(self.time))
 			mc.LogInfo("Playback Time ended: %s" % str(self.time))
+			self.referenceItem.SetProperty("timeToResume", str(0.0))
 			self.listener.onPlaybackEnded(self, self.referenceItem)
 	
 	def onPlayBackStopped(self):
 		if self.listener:
-			self.referenceItem.SetProperty("timeToResume", str(self.time))
 			mc.LogInfo("Playback Time stopped: %s" % str(self.time))
+			self.referenceItem.SetProperty("timeToResume", str(self.time))			
 			self.listener.onPlaybackStopped(self, self.referenceItem, self.time)
+
+	def seekTo(self, seconds):
+		while(self.IsPlayingVideo() != True):
+			i = 0
+		mc.LogInfo("Perform seek to: %s" % str(seconds))
+		seconds = float(seconds)
+		self.SeekTime(seconds)
 
 	def PlayItemWithMenu(self, playItem, referenceItem):
 		self.referenceItem = referenceItem
 		self.time = 0.0
+		#self.PlayWithActionMenu(playItem)
+		self.playMediaController.ShowWithItem(playItem)
+
+	# this method called when user clikc on play media button in play media dailog
+	def OnPlayItemFromMediaDialog(self):
+		playItem = self.playMediaController.playItem
 		if self.referenceItem.GetProperty("timeToResume"):
-			self.Play(playItem)
-		else:
-			self.PlayWithActionMenu(playItem)
-		#event monitoring is disabled - just useless on device
-			#xbmc.sleep(4000)
-			#if False == self.IsPlayingVideo():
-			#	mc.LogInfo("Playback did not started - exit")
-			#	return
-		#self.runEventLoop()
+			timeToResumeInSeconds = float(self.referenceItem.GetProperty("timeToResume"))
+			if 0 != timeToResumeInSeconds:
+				self.exVideoResumeDialog.OnShowVideoResumeDialog(playItem, self.referenceItem, False)
+				return
+		self.Play(playItem)
+		self.runEventLoop()
 
 	def PlayEpisode(self, index):
 		self.time = 0.0
+		previousIndex = self.GetLastViewedEpisodeIndexInPlaylist()
 		if self.referenceItem:
 			self.referenceItem.SetProperty("lastViewedEpisodeIndex", str(index))
+			# if user selected another item in list then reset resume time
+			if previousIndex != index: self.referenceItem.SetProperty("timeToResume", str(0))
+
+		if self.referenceItem.GetProperty("timeToResume"):
+			timeToResumeInSeconds = float(self.referenceItem.GetProperty("timeToResume"))
+			if 0 != timeToResumeInSeconds:
+				self.exVideoResumeDialog.OnShowVideoResumeDialog(None, self.referenceItem, True)
+				return
 		# unlock all actions in player for playlist including move to next and back episodes
 		self.LockPlayerAction(self.XAPP_PLAYER_ACTION_NONE)
 		self.PlaySelected(index, mc.PlayList.PLAYLIST_VIDEO)
-		#event monitoring is disabled
-		#self.runEventLoop()
+		self.runEventLoop()
 
 	def PlayEpisodesWithMenu(self, playListItem, episodesList):
 		self.referenceItem = playListItem
@@ -142,8 +175,27 @@ class exPlayer(mc.Player):
 			index = int(self.referenceItem.GetProperty("lastViewedEpisodeIndex"))
 		return index
 
+	# This method is called when user select action on 'resume from' dialog
+	def OnVideoResumeSelected(self):
+		selectedIndex = self.exVideoResumeDialog.GetList().GetFocusedItem()
+		if 0 == selectedIndex:
+			if self.referenceItem.GetProperty("timeToResume"):
+				timeToResumeInSeconds = float(self.referenceItem.GetProperty("timeToResume"))
+				if 0 != timeToResumeInSeconds:
+					t = threading.Thread(target=self.seekTo, args=(timeToResumeInSeconds,))
+					t.start()
+		if self.exVideoResumeDialog.isPlaylistActive:
+			mc.LogInfo("Start player with playlist item")
+			self.LockPlayerAction(self.XAPP_PLAYER_ACTION_NONE)			
+			self.PlaySelected(self.GetLastViewedEpisodeIndexInPlaylist(), mc.PlayList.PLAYLIST_VIDEO)
+		else:
+			mc.LogInfo("Start player with item: %s" % self.exVideoResumeDialog.playItem.GetLabel())
+			self.Play(self.exVideoResumeDialog.playItem)
+		self.runEventLoop()
+
 def GetPlayer():
 	global exSharedPlayer
 	if (exSharedPlayer is None):
 		exSharedPlayer = exPlayer()
 	return exSharedPlayer
+

@@ -2,7 +2,7 @@
 '''
 	exlocalizer.py
 	exlocalizer provides runtime accessible localized strings
-	Copyright (C) 2011-2012 Sergey Maysak a.k.a. sam
+	Copyright (C) 2011 Sergey Maysak a.k.a. sam
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@ import mc
 import exmodel
 import xbmc
 
+exSharedLocalizer = None #holds the global localizer object
+
 '''
 Concrete subclass of exmodel.localizer interface.
 Implements runtime-based localization for boxee UI due to issue with
@@ -43,6 +45,8 @@ class exlocalizer(exmodel.localizer):
 			'No access to www.ex.ua and fex.net': 'Нет доступа к www.ex.ua и fex.net',
 			'Please make sure you have proxy disabled and check access to www.ex.ua or fex.net in internet browser': 'Пожайлуста убедитесь что прокси выключен и проверте доступ к www.ex.ua или fex.net в интернет броузере',
 			'Recently Viewed':'Недавно просмотренное',
+			'Add to Favorites' : 'Добавить в Избранное',
+			'Remove from Favorites' : 'Удалить из Избранного'
 		},
 	}
 
@@ -55,3 +59,10 @@ class exlocalizer(exmodel.localizer):
 			return self.LOCALIZATIONS[self.language][text]
 		except:
 			return text
+
+
+def GetSharedLocalizer():
+	global exSharedLocalizer
+	if (exSharedLocalizer is None):
+		exSharedLocalizer = exlocalizer()
+	return exSharedLocalizer

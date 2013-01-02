@@ -1,0 +1,236 @@
+<?xml version="1.0"?>
+<window type="dialog" id="14120">
+	<defaultcontrol>7110</defaultcontrol>
+	<allowoverlay>no</allowoverlay>
+		<onload lang="python"><![CDATA[
+import exPlayer
+exPlayer.GetPlayer().playMediaController.OnDialogLoad()
+]]>
+    </onload>
+	<controls>
+		<!--include>Dialog_Background</include-->
+		<control type="image">
+			<width>1280</width>
+			<height>720</height>
+			<texture>white.png</texture>
+			<colordiffuse>DD202020</colordiffuse>
+		</control>
+		<control type="group">
+			<!--include>Dialog_Popup_Animation</include-->
+			<visible>true</visible>
+			<posx>30</posx>
+			<posy>152</posy>
+			<animation type="WindowOpen">
+				<effect type="fade" start="0" end="100" time="200" tween="cubic" easing="inout"/>
+				<effect type="zoom" start="150,150" end="100,100" center="640,360" time="200" tween="cubic" easing="inout"/>
+			</animation>
+			<animation type="WindowClose">
+				<effect type="fade" start="100" end="0" time="200" tween="cubic" easing="inout"/>
+				<effect type="zoom" start="100,100" end="150,150" center="640,360" time="200" tween="cubic" easing="inout"/>
+			</animation>
+			<control type="image">
+				<animation effect="fade" start="0" end="100" time="100">WindowOpen</animation>
+				<animation effect="fade" start="100" end="0" time="100">WindowClose</animation>
+				<posx>0</posx>
+				<posy>0</posy>
+				<width>1220</width>
+				<height>542</height>
+				<texture srcborder="51" border="34">dialog4.png</texture>
+			</control>
+			<!-- Dummy container for Item Info, in addition used to display item thumbnail -->
+			<control type="list" id="5000">
+				<description>info</description>
+				<posx>36</posx>
+				<posy>30</posy>
+				<width>288</width>
+				<height>384</height>
+				<visible>true</visible>
+				<itemlayout width="288" height="384">
+					<control type="largeimage">
+						<posx>0</posx>
+						<posy>0</posy>
+						<width>288</width>
+						<height>384</height>
+						<visible>true</visible>
+						<animation effect="fade" end="80" time="0" condition="true">Conditional</animation>
+						<bordertexture border="12">masks/thumb_background.png</bordertexture>
+						<bordersize>12</bordersize>
+						<texture blend="false">$INFO[ListItem.Thumb]</texture>
+						<!--texture blend="false">white.png</texture-->
+						<info>ListItem.Thumb</info>
+						<aspectratio scalediffuse="false">scale</aspectratio>
+						<fadetime>200</fadetime>
+					</control>
+				</itemlayout>
+				<focusedlayout width="288" height="384">
+					<control type="image">
+						<posx>0</posx>
+						<posy>0</posy>
+						<width>288</width>
+						<height>384</height>
+						<visible>true</visible>
+						<animation effect="fade" end="80" time="0" condition="true">Conditional</animation>
+						<bordertexture border="12">masks/thumb_background.png</bordertexture>
+						<bordersize>12</bordersize>
+						<texture blend="false">$INFO[ListItem.Thumb]</texture>
+						<info>ListItem.Thumb</info>
+						<aspectratio scalediffuse="false">scale</aspectratio>
+						<fadetime>200</fadetime>
+					</control>
+				</focusedlayout>
+			</control>
+			<control type="group" id="7100">
+				<description>actions panel</description>
+				<visible>!Window.IsActive(14101)</visible>
+				<posx>0</posx>
+				<posy>420</posy>
+				<width>1100</width>
+				<height>100</height>
+				<control type="list" id="7110">
+					<posx>0</posx>
+					<posy>0</posy>
+					<width>1000</width>
+					<height>100</height>
+					<onup>-</onup>
+					<onright>6903</onright>
+					<onleft>-</onleft>
+					<ondown>-</ondown>
+					<orientation>horizontal</orientation>
+					<offsetx>40</offsetx>
+					<offsety>5</offsety>
+					<itemlayout width="310" height="90">
+						<control type="label">
+							<visible>true</visible>
+							<posx>180</posx>
+							<posy>10</posy>
+							<width>300</width>
+							<height>40</height>
+							<font>font21</font>
+							<align>center</align>
+							<aligny>center</aligny>
+							<label>[UPPERCASE]$INFO[ListItem.Label][/UPPERCASE]</label>
+							<textcolor>white</textcolor>
+						</control>
+						<control type="image">
+							<posx>10</posx>
+							<posy>5</posy>
+							<width>50</width>
+							<height>50</height>
+							<colordiffuse>80FFFFFF</colordiffuse>
+							<texture>$INFO[ListItem.Thumb]</texture>
+						</control>
+						<control type="image">
+							<visible>true</visible>
+							<posx>0</posx>
+							<posy>0</posy>
+							<width>300</width>
+							<height>70</height>
+							<texture border="15">button_option_menu.png</texture>
+						</control>
+					</itemlayout>
+					<focusedlayout width="310" height="90">
+						<control type="image">
+							<visible>Control.HasFocus(7110)</visible>
+							<posx>0</posx>
+							<posy>0</posy>
+							<width>300</width>
+							<height>70</height>
+							<texture border="15">button_option_menu_on.png</texture>
+						</control>
+						<control type="image">
+							<visible>!Control.HasFocus(7110)</visible>
+							<posx>10</posx>
+							<posy>5</posy>
+							<width>50</width>
+							<height>50</height>
+							<colordiffuse>80FFFFFF</colordiffuse>
+							<texture>$INFO[ListItem.Thumb]</texture>
+						</control>
+						<control type="image">
+							<visible>Control.HasFocus(7110)</visible>
+							<posx>10</posx>
+							<posy>5</posy>
+							<width>50</width>
+							<height>50</height>
+							<texture>$INFO[ListItem.Thumb]</texture>
+						</control>
+						<control type="label">
+							<!--visible>Control.HasFocus(7110)</visible-->
+							<visible>true</visible>
+							<posx>180</posx>
+							<posy>10</posy>
+							<width>300</width>
+							<height>40</height>
+							<font>font21</font>
+							<align>center</align>
+							<aligny>center</aligny>
+							<label>[UPPERCASE]$INFO[ListItem.Label][/UPPERCASE]</label>
+							<textcolor>white</textcolor>
+						</control>
+					</focusedlayout>
+					<content type="action">
+						<onclick lang="python"><![CDATA[exPlayer.GetPlayer().playMediaController.OnAction()]]></onclick>
+					</content>
+				</control>
+			</control>
+			<control type="grouplist">
+				<posx>346</posx>
+				<posy>36</posy>
+				<width>1200</width>
+				<height>430</height>
+				<itemgap>10</itemgap>
+				<orientation>vertical</orientation>
+				<usecontrolcoords>false</usecontrolcoords>
+				<control type="label">
+					<visible>true</visible>
+					<width>840</width>
+					<height>32</height>
+					<font>font28b</font>
+					<align>left</align>
+					<aligny>center</aligny>					
+					<label>[UPPERCASE]$INFO[Container(5000).ListItem.Label][/UPPERCASE]</label>
+					<textcolor>title</textcolor>
+				</control>
+				<control type="group" id="6200">
+					<visible>true</visible>
+					<posx>840</posx>
+					<posy>452</posy>
+					<control type="group" id="6800">
+						<control type="textbox" id="6803">							
+							<posx>0</posx>
+							<posy>0</posy>
+							<width>840</width>
+							<height>312</height>
+							<font>font22</font>
+							<align>left</align>
+							<aligny>top</aligny>
+							<textcolor>white</textcolor>
+							<label>$INFO[Container(5000).ListItem.property(description)]</label>
+							<wrapmultiline>true</wrapmultiline>
+							<pagecontrol>6903</pagecontrol>
+						</control>
+					</control>
+					<control type="group" id="6900">
+						<control type="scrollbar" id="6903">
+							<visible>Control.IsVisible(6803)</visible>
+							<posx>820</posx>
+							<posy>0</posy>
+							<width>28</width>
+							<height>312</height>
+							<texturesliderbackground>-</texturesliderbackground>
+							<textureslidernib>-</textureslidernib>
+							<textureslidernibfocus>-</textureslidernibfocus>
+							<texturesliderbar>-</texturesliderbar>
+							<texturesliderbarfocus>-</texturesliderbarfocus>
+							<orientation>vertical</orientation>
+							<showonepage>false</showonepage>
+							<onup>-</onup>
+							<ondown>-</ondown>
+							<onleft>7110</onleft>
+						</control>
+					</control>
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>
