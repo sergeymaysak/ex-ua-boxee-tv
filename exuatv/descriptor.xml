@@ -1,8 +1,8 @@
 <app>
 	<id>com.ex-ua-boxee-tv.googlecode.exuatv</id>
 	<name>EX.UA TV</name>
-	<version>0.5</version>
-	<description>EX.UA TV v0.5 Access and plays ex.ua content from Boxee.</description>
+	<version>0.55</version>
+	<description>EX.UA TV v0.55 Access and plays ex.ua content from Boxee.</description>
 	<thumb>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee/icon.png</thumb>
 	<repository>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee</repository>
 	<repositoryid>com.ex-ua-boxee-tv.googlecode</repositoryid>
