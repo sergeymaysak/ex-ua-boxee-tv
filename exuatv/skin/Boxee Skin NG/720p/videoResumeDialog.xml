@@ -39,7 +39,7 @@ exPlayer.GetPlayer().exVideoResumeDialog.OnLoadDialog()
 						<width>420</width>
 						<height>56</height>
 						<font>font24b</font>
-						<textcolor>mediumgreyheidi</textcolor>
+						<textcolor>grey</textcolor>
 						<align>center</align>
 						<aligny>center</aligny>
 						<label>[B]$INFO[ListItem.Label][/B]</label>
@@ -51,7 +51,8 @@ exPlayer.GetPlayer().exVideoResumeDialog.OnLoadDialog()
 						<posy>0</posy>
 						<width>420</width>
 						<height>56</height>
-						<texture srcborder="24" border="16">button-focused.png</texture>
+						<!--texture srcborder="24" border="16">button-focused.png</texture-->
+						<texture srcborder="20" border="20">button_option_menu_on.png</texture>
 					</control>
 					<control type="label">
 						<posx>210</posx>
@@ -59,7 +60,7 @@ exPlayer.GetPlayer().exVideoResumeDialog.OnLoadDialog()
 						<width>420</width>
 						<height>56</height>
 						<font>font24b</font>
-						<textcolor>whiteheidi</textcolor>
+						<textcolor>white</textcolor>
 						<align>center</align>
 						<aligny>center</aligny>
 						<label>[B]$INFO[ListItem.Label][/B]</label>

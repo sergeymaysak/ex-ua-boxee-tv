@@ -59,7 +59,8 @@ class exPlayMediaDialogController:
 
 		actionItem = mc.ListItem(mc.ListItem.MEDIA_UNKNOWN)
 		# localize with 'add to favorites'
-		actionItem.SetLabel(mc.GetLocalizedString(14086))
+		#actionItem.SetLabel(mc.GetLocalizedString(14086))
+		actionItem.SetLabel(exlocalizer.GetSharedLocalizer().localizedString('Playback'))
 		actionItem.SetThumbnail('action_play.png')
 		actionItems.append(actionItem)
 

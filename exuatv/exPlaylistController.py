@@ -24,6 +24,7 @@ __date__ ="$Aug 31, 2011 1:11:47 AM$"
 import mc
 import xbmc
 import exPlayer
+import exlocalizer
 
 class exPlaylistController:
 	# constants
@@ -78,13 +79,15 @@ class exPlaylistController:
 		actionItems = mc.ListItems()
 		actionItem = mc.ListItem(mc.ListItem.MEDIA_UNKNOWN)
 		# localize with 'more info'
-		actionItem.SetLabel(mc.GetLocalizedString(53710))
+		# actionItem.SetLabel(mc.GetLocalizedString(53710))		
+		actionItem.SetLabel(exlocalizer.GetSharedLocalizer().localizedString('Info'))
 		actionItem.SetThumbnail('action_more.png')
 		actionItems.append(actionItem)
 
 		actionItem = mc.ListItem(mc.ListItem.MEDIA_UNKNOWN)
 		# localize with 'add to favorites'
-		actionItem.SetLabel(mc.GetLocalizedString(53729))
+		#actionItem.SetLabel(mc.GetLocalizedString(53729))
+		actionItem.SetLabel(exlocalizer.GetSharedLocalizer().localizedString('Add to Favorites'))
 		actionItem.SetThumbnail('action_queue_add.png')
 		actionItems.append(actionItem)
 

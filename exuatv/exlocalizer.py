@@ -45,6 +45,8 @@ class exlocalizer(exmodel.localizer):
 			'No access to www.ex.ua and fex.net': 'Нет доступа к www.ex.ua и fex.net',
 			'Please make sure you have proxy disabled and check access to www.ex.ua or fex.net in internet browser': 'Пожайлуста убедитесь что прокси выключен и проверте доступ к www.ex.ua или fex.net в интернет броузере',
 			'Recently Viewed':'Недавно просмотренное',
+			'Playback' : 'Воспроизведение',
+			'Info' : 'Сведения',
 			'Add to Favorites' : 'Добавить в Избранное',
 			'Remove from Favorites' : 'Удалить из Избранного'
 		},
