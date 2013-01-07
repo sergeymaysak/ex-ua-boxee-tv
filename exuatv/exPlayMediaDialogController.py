@@ -2,7 +2,7 @@
 '''
 	exPlayMediaDialogController.py
 	exPlayMediaDialogController is a controler of dialog of play media with options.
-	Copyright (C) 2012 Sergey Maysak a.k.a. sam
+	Copyright (C) 2012-2013 Sergey Maysak a.k.a. sam (segey.maysak@gmail.com)
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by

@@ -2,7 +2,7 @@
 '''
 	exmodel.py
 	Definition of class representing model (in MVC) of ex.ua
-	Copyright (C) 2011 Sergey Maysak a.k.a. sam
+	Copyright (C) 2011-2013 Sergey Maysak a.k.a. sam (segey.maysak@gmail.com)
 	Based on original work of Vadim Skorba (vadim.skorba@gmail.com)
 
 	This program is free software: you can redistribute it and/or modify

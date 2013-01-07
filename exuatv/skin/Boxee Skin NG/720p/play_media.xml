@@ -108,7 +108,7 @@ exPlayer.GetPlayer().playMediaController.OnDialogLoad()
 							<font>font21</font>
 							<align>center</align>
 							<aligny>center</aligny>
-							<label>[UPPERCASE]$INFO[ListItem.Label][/UPPERCASE]</label>
+							<label>$INFO[ListItem.Label]</label>
 							<textcolor>white</textcolor>
 						</control>
 						<control type="image">
@@ -164,7 +164,7 @@ exPlayer.GetPlayer().playMediaController.OnDialogLoad()
 							<font>font21</font>
 							<align>center</align>
 							<aligny>center</aligny>
-							<label>[UPPERCASE]$INFO[ListItem.Label][/UPPERCASE]</label>
+							<label>$INFO[ListItem.Label]</label>
 							<textcolor>white</textcolor>
 						</control>
 					</focusedlayout>

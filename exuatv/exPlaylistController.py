@@ -2,7 +2,7 @@
 '''
 	exPlaylistController.py
 	exPlaylistController is a playlist selection dialog controler.
-	Copyright (C) 2011-2012 Sergey Maysak a.k.a. sam
+	Copyright (C) 2011-2013 Sergey Maysak a.k.a. sam (segey.maysak@gmail.com)
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by

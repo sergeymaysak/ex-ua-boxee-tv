@@ -4,7 +4,7 @@
 	exRecentlyViewedModel represent a model for ListItems that were recenly
 	viewed. Provides facility to load/store viewed items in prefs and manages
 	number of items stored.
-	Copyright (C) 2011-2012 Sergey Maysak a.k.a. sam
+	Copyright (C) 2011-2013 Sergey Maysak a.k.a. sam (segey.maysak@gmail.com)
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by

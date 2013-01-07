@@ -2,7 +2,7 @@
 '''
 	excontroller.py
 	Definition of controller class mediating model and view layer
-	Copyright (C) 2011-2012 Sergey Maysak a.k.a. sam
+	Copyright (C) 2011-2013 Sergey Maysak a.k.a. sam (segey.maysak@gmail.com)
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -283,6 +283,9 @@ class excontroller(exPlayer.exPlayerEventListener):
 	# Action handlers from UI controls
 	def OnMainWindowLoad(self):
 		# load sections menu if it is empty
+		#systemVersion = xbmc.getInfoLabel('System.BuildVersion')
+		#mc.LogInfo("system version: %s" % systemVersion)
+
 		mc.LogInfo("On Load Main Window")
 		if 0 == len(self.GetSectionsList().GetItems()):
 			tracker.trackMainView('UA-25431823-1')
@@ -391,9 +394,9 @@ class excontroller(exPlayer.exPlayerEventListener):
 			self.OnLoadSectionPages(self.GetNavNextPageItem(), False, False, True)
 
 	def GetPlayableItemForItemInDict(self, item, playDict):
-		mc.LogInfo("Flow: Created item of type MEDIA_VIDEO_FEATURE_FILM")
+		mc.LogInfo("Flow: Created item of type MEDIA_VIDEO_CLIP")
 		#mc.LogInfo("playDict image: %s" % playDict["image"])
-		type = mc.ListItem.MEDIA_VIDEO_FEATURE_FILM
+		type = mc.ListItem.MEDIA_VIDEO_CLIP
 		playItem = mc.ListItem(type)
 		playItem.SetThumbnail(playDict["image"])
 		#playItem.SetIcon(playDict["image"])
@@ -402,7 +405,8 @@ class excontroller(exPlayer.exPlayerEventListener):
 		playItem.SetDescription(playDict["description"])
 		playItem.SetLabel(playDict["title"])
 		playItem.SetPath(item["path"])
-		
+		playItem.SetAddToHistory(True)
+		playItem.SetProviderSource('www.ex.ua')
 		return playItem
 
 	def DoesItemPointToTrailer(self, itemDict):

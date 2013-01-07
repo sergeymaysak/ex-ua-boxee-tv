@@ -4,7 +4,7 @@
 	Player is responsible to play media - extends mc.Player with functinality
 	absent in it - resume of item from stopped time and "play playlist with
 	options dialog". Based on idea of MyPlayer from bartsidee.
-	Copyright (C) 2011 Sergey Maysak a.k.a. sam
+	Copyright (C) 2011-2013 Sergey Maysak a.k.a. sam (segey.maysak@gmail.com)
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -23,6 +23,10 @@
 __author__="sam"
 __date__ ="$Sep 18, 2011 10:05:38 PM$"
 
+import string
+import os
+import sys
+import re
 import xbmc
 import mc
 import exPlaylistController
@@ -30,6 +34,7 @@ import time
 import threading
 import exVideoResumeDialog
 import exPlayMediaDialogController
+import pickle
 
 class exPlayerEventListener:
 	''' Interface of player event listener. Any method is optional for
@@ -68,6 +73,8 @@ class exPlayer(mc.Player):
             self.EVENT_ENDED  : self.onPlayBackEnded,
             self.EVENT_STARTED : self.onPlayBackStarted
 			}
+		# inspect playlists every time we create player (i.e. during each app start)
+		self.InspectAndCleanUpPlaylistsDir()
 
 	def lastEventDescription(self):
 		if self.last == self.EVENT_STARTED: return "event_started"
@@ -137,7 +144,7 @@ class exPlayer(mc.Player):
 			if 0 != timeToResumeInSeconds:
 				self.exVideoResumeDialog.OnShowVideoResumeDialog(playItem, self.referenceItem, False)
 				return
-		self.Play(playItem)
+		self.PlaySingleItemAsFile(playItem)
 		self.runEventLoop()
 
 	def PlayEpisode(self, index):
@@ -154,8 +161,7 @@ class exPlayer(mc.Player):
 				self.exVideoResumeDialog.OnShowVideoResumeDialog(None, self.referenceItem, True)
 				return
 		# unlock all actions in player for playlist including move to next and back episodes
-		self.LockPlayerAction(self.XAPP_PLAYER_ACTION_NONE)
-		self.PlaySelected(index, mc.PlayList.PLAYLIST_VIDEO)
+		self.PlaySelectedIndexInPlaylistAsFile(index)
 		self.runEventLoop()
 
 	def PlayEpisodesWithMenu(self, playListItem, episodesList):
@@ -186,12 +192,136 @@ class exPlayer(mc.Player):
 					t.start()
 		if self.exVideoResumeDialog.isPlaylistActive:
 			mc.LogInfo("Start player with playlist item")
-			self.LockPlayerAction(self.XAPP_PLAYER_ACTION_NONE)			
-			self.PlaySelected(self.GetLastViewedEpisodeIndexInPlaylist(), mc.PlayList.PLAYLIST_VIDEO)
+			#self.PlaySelected(self.GetLastViewedEpisodeIndexInPlaylist(), mc.PlayList.PLAYLIST_VIDEO)
+			self.PlaySelectedIndexInPlaylistAsFile(self.GetLastViewedEpisodeIndexInPlaylist())
 		else:
 			mc.LogInfo("Start player with item: %s" % self.exVideoResumeDialog.playItem.GetLabel())
-			self.Play(self.exVideoResumeDialog.playItem)
+			#self.Play(self.exVideoResumeDialog.playItem)
+			self.PlaySingleItemAsFile(self.exVideoResumeDialog.playItem)
 		self.runEventLoop()
+
+	def SavePlaylistItemsAsFiles(self):
+		videoPlaylist = mc.PlayList(mc.PlayList.PLAYLIST_VIDEO)
+		for index in range(videoPlaylist.Size()):
+			singleItem = videoPlaylist.GetItem(index)
+			filePath = self.GeneratePlayFileForItem(singleItem, True)
+			if None != filePath:
+				singleItem.SetPath(filePath)
+
+	def PlaySelectedIndexInPlaylistAsFile(self, index):
+		self.SavePlaylistItemsAsFiles()
+		# unlock all actions in player for playlist including move to next and back episodes
+		self.LockPlayerAction(self.XAPP_PLAYER_ACTION_NONE)
+		self.PlaySelected(index, mc.PlayList.PLAYLIST_VIDEO)
+
+	# play item replacing its path from http url to local file path to .m3u8 playlist -
+	# this technique allows to bring back subtitles and language selection is OSD during playback
+	def PlaySingleItemAsFile(self, playItem):
+		filePath = self.GeneratePlayFileForItem(playItem)
+		if None != filePath:
+			playItem.SetPath(filePath)
+		self.Play(playItem)
+	
+	def GetPlaylistFileNameForItem(self, playItem):
+		lastPathComponent = None
+		pathCompoments = os.path.split(playItem.GetPath())
+		if pathCompoments != None: lastPathComponent = pathCompoments[1]
+		valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+		filename = ''.join(c for c in lastPathComponent if c in valid_chars)
+		filename = filename.lstrip().replace(' ', '').lstrip('.')
+		if 0 == len(filename): filename = "playlist"
+		return filename + '.m3u8'
+
+	def GetPlaylistsMediaDir(self):
+		mediaDir = xbmc.translatePath(mc.GetApp().GetAppMediaDir())
+		mediaDir = os.path.join(mediaDir, "playlists")
+ 		if False == os.path.exists(mediaDir):
+			os.mkdir(mediaDir)
+		return mediaDir
+
+	def GetEpisodesMediaDir(self):
+		mediaDir = xbmc.translatePath(mc.GetApp().GetAppMediaDir())
+		mediaDir = os.path.join(mediaDir, "episodes")
+ 		if False == os.path.exists(mediaDir):
+			os.mkdir(mediaDir)
+		return mediaDir
+
+	# Returns playlists filenames sorted by modification date,
+	# the oldest files are at the beginning of the list
+	def GetFilenamesSortedByModificationDate(self):
+		storedItems = self.GetStoredPlaylistNamesByPlayingTimes()
+		filesList = sorted(storedItems.keys(), key = lambda x: storedItems[x])
+		mc.LogInfo("sorted list: %s" % str(filesList))
+		return filesList
+
+	def InspectAndCleanUpPlaylistsDir(self):
+		try:
+			mediaDir = self.GetPlaylistsMediaDir()
+			savedFilesList = os.listdir(mediaDir)
+			# allow grow list to 150 items - then remove oldest 50
+			if (len(savedFilesList) - 50) >= 100:
+				storedFileNames = self.GetStoredPlaylistNamesByPlayingTimes()
+				savedFilesList = self.GetFilenamesSortedByModificationDate()
+				mc.LogInfo("Deleting oldest files from list: %s" % str(savedFilesList))
+				for i in range(len(savedFilesList) - 50):
+					fileName = savedFilesList[i]
+					pathToRemove = os.path.join(mediaDir, fileName)
+					mc.LogInfo("path to remove: %s" % pathToRemove)
+					os.remove(pathToRemove)
+					if storedFileNames.has_key(fileName): del storedFileNames[fileName]
+				self.StorePlaylistNamesByPlayingTimes(storedFileNames)
+			# clean up episodes
+			episodesDir = self.GetEpisodesMediaDir()
+			episodesSavedList = os.listdir(episodesDir)
+			if len(episodesSavedList) >= 5:
+				for file in episodesSavedList:
+					os.remove(os.path.join(episodesDir, file))
+		except:
+			pass
+
+	# Constructs m3u8 (extended m3u format) playlist for specified playItem and
+	# writes it to special directory inside app (to make sure it is accessible later from system history)
+	def GeneratePlayFileForItem(self, playItem, isEpisode = False):
+		tmpFileName = None
+		try:
+			playListContent = '#EXTM3U' + '\n' + '#EXTINF:-1,' + playItem.GetLabel() + '\n'
+			playListContent += playItem.GetPath() + '\n' + '#EXT-X-ENDLIST'
+
+			if isEpisode:
+				mediaDir = self.GetEpisodesMediaDir()
+			else:
+				mediaDir = self.GetPlaylistsMediaDir()
+			name = self.GetPlaylistFileNameForItem(playItem)
+			tmpFileName = os.path.join(mediaDir, name)
+			#mc.LogInfo("Playlist file path: %s" % tmpFileName)
+			#mc.LogInfo("Opening file: %s" % tmpFileName)
+			f = open(tmpFileName, 'w')
+			f.write(playListContent)
+			f.close()
+
+			if False == isEpisode:
+				self.StoreLastPlayedTimeForItemWithPath(name)
+		except:
+			mc.LogInfo("Failed to open and write .m3u8 file - continue without it")
+			tmpFileName = None
+		return tmpFileName
+
+	def GetStoredPlaylistNamesByPlayingTimes(self):
+		stringRep = mc.GetApp().GetLocalConfig().GetValue("playlistnames-by-times")
+		storedItems = dict()
+		if len(stringRep) > 0: storedItems = pickle.loads(stringRep)
+		if None == storedItems: storedItems = dict()
+		return storedItems
+
+	def StorePlaylistNamesByPlayingTimes(self, itemsToStore):
+		stringRep = pickle.dumps(itemsToStore)
+		if stringRep != None:
+			mc.GetApp().GetLocalConfig().SetValue("playlistnames-by-times", stringRep)
+
+	def StoreLastPlayedTimeForItemWithPath(self, fileName):
+		storedItems = self.GetStoredPlaylistNamesByPlayingTimes()
+		storedItems[fileName] = str(time.time())
+		self.StorePlaylistNamesByPlayingTimes(storedItems)
 
 def GetPlayer():
 	global exSharedPlayer

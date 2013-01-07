@@ -2,7 +2,7 @@
 '''
 	exlocalizer.py
 	exlocalizer provides runtime accessible localized strings
-	Copyright (C) 2011 Sergey Maysak a.k.a. sam
+	Copyright (C) 2011-2013 Sergey Maysak a.k.a. sam (segey.maysak@gmail.com)
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
