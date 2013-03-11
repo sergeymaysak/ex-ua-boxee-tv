@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<window type="dialog" id="14100">
+	<defaultcontrol>105</defaultcontrol>
+	<allowoverlay>no</allowoverlay>
+	<onload lang="python"><![CDATA[
+import exPlayer
+exPlayer.GetPlayer().playlistController.OnDialogLoad()
+]]>
+    </onload>
+	<controls>
+		<control type="image">
+			<width>1280</width>
+			<height>720</height>
+			<texture>white.png</texture>
+			<colordiffuse>DD202020</colordiffuse>
+		</control>
+		<control type="group">
+			<posx>30</posx>
+			<posy>122</posy>
+			<animation type="WindowOpen">
+				<effect type="fade" start="0" end="100" time="200" tween="cubic" easing="inout"/>
+				<effect type="zoom" start="150,150" end="100,100" center="640,360" time="200" tween="cubic" easing="inout"/>
+			</animation>
+			<animation type="WindowClose">
+				<effect type="fade" start="100" end="0" time="200" tween="cubic" easing="inout"/>
+				<effect type="zoom" start="100,100" end="150,150" center="640,360" time="200" tween="cubic" easing="inout"/>
+			</animation>
+			<control type="image">
+				<animation effect="fade" start="0" end="100" time="100">WindowOpen</animation>
+				<animation effect="fade" start="100" end="0" time="100">WindowClose</animation>
+				<posx>0</posx>
+				<posy>0</posy>
+				<width>1220</width>
+				<height>542</height>
+				<texture srcborder="51" border="34">dialog4.png</texture>
+			</control>
+			<control type="largeimage" id = "2000">
+				<visible>true</visible>
+				<description>fineart image of playlist - loaded from http url set in exPlaylistController</description>
+				<posx>34</posx>
+				<posy>30</posy>
+				<width>288</width>
+				<height>384</height>
+				<visible>true</visible>
+				<animation effect="fade" end="80" time="0" condition="true">Conditional</animation>
+				<bordertexture border="12">masks/thumb_background.png</bordertexture>
+				<bordersize>12</bordersize>
+				<texture blend="false">black.png</texture>
+				<aspectratio scalediffuse="false">scale</aspectratio>
+				<fadetime>200</fadetime>
+			</control>
+			<control type="label" id="106">
+				<description>heading label</description>
+				<posx>346</posx>
+				<posy>34</posy>
+				<width>840</width>
+				<height>28</height>
+				<font>font28b</font>
+				<align>left</align>
+				<scroll>true</scroll>
+				<haspath>false</haspath>
+				<wrapmultiline>false</wrapmultiline>
+				<aligny>center</aligny>
+				<label>Select item to play</label>
+				<textcolor>title</textcolor>
+			</control>
+			<control type="list" id="105">
+				<visible>!Window.IsActive(14101)</visible>
+				<posx>340</posx>
+				<posy>110</posy>
+				<width>840</width>
+				<height>340</height>
+				<onleft>1510</onleft>
+				<onright>-</onright>
+				<onup>-</onup>
+				<ondown>-</ondown>
+				<scrolltime>200</scrolltime>
+				<itemlayout width="840" height="40">
+					<control type="label">
+						<posx>20</posx>
+						<posy>0</posy>
+						<width>800</width>
+						<height>40</height>
+						<font>font22</font>
+						<aligny>center</aligny>
+						<textcolor>grey</textcolor>
+						<selectedcolor>grey</selectedcolor>
+						<align>left</align>
+						<info>ListItem.Label</info>
+					</control>
+				</itemlayout>
+				<focusedlayout width="840" height="40">
+					<control type="image">
+						<visible>Control.HasFocus(105)</visible>
+						<posx>0</posx>
+						<posy>0</posy>
+						<width>840</width>
+						<height>40</height>
+						<texture border="15">button_option_menu_on.png</texture>
+					</control>
+					<control type="label">
+						<posx>20</posx>
+						<posy>0</posy>
+						<width>800</width>
+						<height>40</height>
+						<font>font22b</font>
+						<aligny>center</aligny>
+						<textcolor>white</textcolor>
+						<selectedcolor>white</selectedcolor>
+						<align>left</align>
+						<info>ListItem.Label</info>
+						<scroll>true</scroll>
+						<scrollout>false</scrollout>
+						<scrollspeed>40</scrollspeed>
+						<pauseatend>4000</pauseatend>
+					</control>
+				</focusedlayout>
+				<content type="action">
+					<onclick lang="python"><![CDATA[exPlayer.GetPlayer().playlistController.OnPlayListItemSelected()]]></onclick>
+				</content>
+			</control>
+			<control type="group" id="1500">
+				<description>actions panel</description>
+				<visible>!Window.IsActive(14101)</visible>
+				<posx>40</posx>
+				<posy>420</posy>
+				<width>840</width>
+				<height>100</height>
+				<control type="list" id="1510">
+					<posx>-18</posx>
+					<posy>0</posy>
+					<width>600</width>
+					<height>100</height>
+					<onup>-</onup>
+					<onright>105</onright>
+					<onleft>-</onleft>
+					<ondown>-</ondown>
+					<orientation>horizontal</orientation>
+					<offsetx>20</offsetx>
+					<offsety>5</offsety>
+					<itemlayout width="70" height="90">
+						<control type="image">
+							<posx>10</posx>
+							<posy>10</posy>
+							<width>50</width>
+							<height>50</height>
+							<colordiffuse>80FFFFFF</colordiffuse>
+							<texture>$INFO[ListItem.Thumb]</texture>
+						</control>
+					</itemlayout>
+					<focusedlayout width="70" height="90">
+						<control type="image">
+							<visible>Control.HasFocus(1510)</visible>
+							<posx>0</posx>
+							<posy>0</posy>
+							<width>70</width>
+							<height>70</height>
+							<texture border="15">button_option_menu_on.png</texture>
+						</control>
+						<control type="image">
+							<visible>!Control.HasFocus(1510)</visible>
+							<posx>10</posx>
+							<posy>10</posy>
+							<width>50</width>
+							<height>50</height>
+							<colordiffuse>80FFFFFF</colordiffuse>
+							<texture>$INFO[ListItem.Thumb]</texture>
+						</control>
+						<control type="image">
+							<visible>Control.HasFocus(1510)</visible>
+							<posx>10</posx>
+							<posy>10</posy>
+							<width>50</width>
+							<height>50</height>
+							<texture>$INFO[ListItem.Thumb]</texture>
+						</control>
+						<control type="label">
+							<visible>Control.HasFocus(1510)</visible>
+							<posx>35</posx>
+							<posy>74</posy>
+							<width>200</width>
+							<height>20</height>
+							<font>title16b</font>
+							<align>center</align>
+							<aligny>center</aligny>
+							<label>[UPPERCASE]$INFO[ListItem.Label][/UPPERCASE]</label>
+							<textcolor>white</textcolor>
+						</control>
+					</focusedlayout>
+					<content type="action">
+						<onclick lang="python"><![CDATA[exPlayer.GetPlayer().playlistController.OnAction()]]></onclick>
+					</content>
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>

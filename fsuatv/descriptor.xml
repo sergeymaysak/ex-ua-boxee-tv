@@ -1,0 +1,17 @@
+<app>
+	<id>fsuatv</id>
+	<name>FS.UA TV</name>
+	<version>0.1</version>
+	<description>FS.UA TV v0.1 Access and plays FS.ua content from Boxee.</description>	
+	<thumb>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee/icon-fs.png</thumb>
+	<!--repository>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee</repository-->
+	<!--repositoryid>com.ex-ua-boxee-tv.googlecode</repositoryid-->
+	<media>video</media>
+	<copyright>sergey.maysak</copyright>
+	<email>sergey.maysak@gmail.com</email>
+	<type>skin</type>
+	<startWindow>14000</startWindow>
+	<platform>all</platform>
+	<minversion>0.9.20</minversion>
+   <test-app>true</test-app>
+</app>

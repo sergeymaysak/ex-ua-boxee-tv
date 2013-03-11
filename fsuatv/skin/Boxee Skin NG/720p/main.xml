@@ -1,0 +1,522 @@
+<?xml version="1.0"?>
+<window type="window" id="14000">
+	<defaultcontrol>100</defaultcontrol>
+	<allowoverlay>no</allowoverlay>
+	<onload lang="python"><![CDATA[
+import mc
+from excontroller import exc
+exc.OnMainWindowLoad()
+]]>
+	</onload>
+	<controls>
+	<include>Common_Background</include>
+	<include>BrowseLoadingAnimation</include>
+	<control type="button" id="510">
+		<description>Navigation focus helper(private)</description>
+		<visible allowhiddenfocus="true">false</visible>
+		<posx>-100</posx>
+		<posy>-100</posy>
+		<width>10</width>
+		<height>10</height>
+		<onleft>310</onleft>
+		<onright>310</onright>
+		<onup>310</onup>
+		<ondown>310</ondown>
+		<label></label>
+		<textcolor>grey</textcolor>
+		<font>font21</font>
+		<align>center</align>
+		<aligny>center</aligny>
+		<onclick lang="python"><![CDATA[]]></onclick>
+		<onfocus lang="python"><![CDATA[exc.FixupNavigation()]]></onfocus>
+	</control>
+	<control type="group">
+		<control type="image">
+			<posx>20</posx>
+			<posy>18</posy>
+			<width>50</width>
+			<height>50</height>
+			<align>center</align>
+			<aligny>center</aligny>
+			<texture>fs-logo.png</texture>
+		</control>
+		<control type="label">
+			<posx>80</posx>
+			<posy>20</posy>
+			<width>600</width>
+			<height>40</height>
+			<align>left</align>
+			<aligny>center</aligny>
+			<scroll>false</scroll>
+			<number></number>
+			<haspath>true</haspath>
+			<font>font48b</font>
+			<textcolor>white</textcolor>
+			<shadowcolor>grey</shadowcolor>
+			<wrapmultiline>false</wrapmultiline>
+			<label>FS.UA TV</label>
+		</control>
+		<control type="label">
+			<posx>1220</posx>
+			<posy>690</posy>
+			<width>80</width>
+			<height>20</height>
+			<font>font14</font>
+			<textcolor>40FFFFFF</textcolor>
+			<label>v0.1</label>
+		</control>
+	</control>
+	<control type="grouplist">
+		<visible>Control.IsVisible(100)</visible>
+		<posx>20</posx>
+		<posy>88</posy>
+		<width>200</width>
+		<height>116</height>
+		<itemgap>0</itemgap>
+		<ondown>-</ondown>
+		<onup>-</onup>
+		<onright>-</onright>
+		<orientation>vertical</orientation>
+		<usecontrolcoords>false</usecontrolcoords>
+		<control type="group">
+			<width>200</width>
+			<height>48</height>
+			<control type="button" id="310">
+				<width>200</width>
+				<height>38</height>
+				<onleft>100</onleft>
+				<onright>320</onright>
+				<onup>-</onup>
+				<ondown>350</ondown>
+				<label>$LOCALIZE[10]</label>
+				<textcolor>grey</textcolor>
+				<focusedcolor>white</focusedcolor>
+				<texturenofocus border="20">button_option_menu.png</texturenofocus>
+				<texturefocus border="20">button_option_menu_on.png</texturefocus>
+				<textureclick border="20">button_option_menu_click.png</textureclick>
+				<font>font21</font>
+				<align>center</align>
+				<aligny>center</aligny>
+				<onclick lang="python"><![CDATA[exc.OnSearchEverywhere()]]></onclick>
+			</control>
+		</control>
+		<control type="group">
+			<width>200</width>
+			<height>48</height>
+			<control type="button" id="350">
+				<description>favourites section button</description>
+				<width>200</width>
+				<height>38</height>
+				<onleft>100</onleft>
+				<onright>200</onright>
+				<onup>310</onup>
+				<ondown>100</ondown>
+				<label>$LOCALIZE[14]</label>
+				<textcolor>grey</textcolor>
+				<focusedcolor>white</focusedcolor>
+				<texturenofocus border="20">button_option_menu.png</texturenofocus>
+				<texturefocus border="20">button_option_menu_on.png</texturefocus>
+				<textureclick border="20">button_option_menu_click.png</textureclick>
+				<font>font21</font>
+				<align>center</align>
+				<aligny>center</aligny>
+				<onclick lang="python"><![CDATA[exc.OnRecentlyViewed()]]></onclick>
+			</control>
+		</control>
+	</control>
+	<control type="grouplist" id="300">
+		<visible>Control.IsVisible(100)</visible>
+		<posx>975</posx>
+		<posy>88</posy>
+		<width>500</width>
+		<height>58</height>
+		<itemgap>10</itemgap>
+		<ondown>200</ondown>
+		<onup>-</onup>
+		<onright>-</onright>
+		<orientation>horizontal</orientation>
+		<usecontrolcoords>false</usecontrolcoords>
+		<control type="group">
+			<width>90</width>
+			<height>58</height>
+			<control type="button" id="320">
+				<description>search in current section button</description>
+				<width>90</width>
+				<height>38</height>
+				<onleft>310</onleft>
+				<onright>330</onright>
+				<onup>-</onup>
+				<ondown>200</ondown>
+				<label>$LOCALIZE[137]</label>
+				<textcolor>grey</textcolor>
+				<focusedcolor>white</focusedcolor>
+				<texturenofocus border="20">button_option_menu.png</texturenofocus>
+				<texturefocus border="20">button_option_menu_on.png</texturefocus>
+				<textureclick border="20">button_option_menu_click.png</textureclick>
+				<font>font21</font>
+				<align>center</align>
+				<aligny>center</aligny>
+				<onclick lang="python"><![CDATA[exc.OnSearchInActiveSection()]]></onclick>
+			</control>
+		</control>
+		<control type="group">
+			<width>90</width>
+			<height>58</height>
+			<control type="button" id="330">
+				<width>90</width>
+				<height>38</height>
+				<onleft>320</onleft>
+				<onright>340</onright>
+				<onup>-</onup>
+				<ondown>200</ondown>
+				<label>$LOCALIZE[12]</label>
+				<textcolor>grey</textcolor>
+				<focusedcolor>white</focusedcolor>
+				<texturenofocus border="20">button_option_menu.png</texturenofocus>
+				<texturefocus border="20">button_option_menu_on.png</texturefocus>
+				<textureclick border="20">button_option_menu_click.png</textureclick>
+				<font>font21</font>
+				<align>center</align>
+				<aligny>center</aligny>
+				<enable>Container(500).HasPrevious</enable>
+				<onclick lang="python"><![CDATA[exc.OnBack()]]>
+				</onclick>
+			</control>
+		</control>
+		<control type="group">
+			<width>90</width>
+			<height>58</height>
+			<control type="button" id="340">
+				<description>Next button</description>
+				<width>90</width>
+				<height>38</height>
+				<onleft>330</onleft>
+				<onright>-</onright>
+				<onup>-</onup>
+				<ondown>200</ondown>
+				<label>$LOCALIZE[11]</label>
+				<textcolor>grey</textcolor>
+				<focusedcolor>white</focusedcolor>
+				<texturenofocus border="20">button_option_menu.png</texturenofocus>
+				<texturefocus border="20">button_option_menu_on.png</texturefocus>
+				<textureclick border="20">button_option_menu_click.png</textureclick>
+				<font>font21</font>
+				<align>center</align>
+				<aligny>center</aligny>
+				<enable>Container(500).HasNext</enable>
+				<onclick lang="python"><![CDATA[exc.OnNext()]]></onclick>
+			</control>
+		</control>
+	</control>
+	<control type="list" id="100">
+		<description>sections list container</description>
+		<visible>false</visible>
+		<posx>20</posx>
+		<posy>185</posy>
+		<width>200</width>
+		<height>490</height>
+		<onup>350</onup>
+		<ondown>-</ondown>
+		<onleft>-</onleft>
+		<onright>200</onright>
+		<orientation>vertical</orientation>
+		<itemlayout width="200" height="40">
+			<control type="label">
+				<posx>10</posx>
+				<width>200</width>
+				<height>38</height>
+				<font>font21</font>
+				<align>left</align>
+				<aligny>center</aligny>
+				<label>$INFO[ListItem.Label]</label>
+				<info>ListItem.Label</info>
+				<textcolor>grey</textcolor>
+			</control>
+		</itemlayout>
+		<focusedlayout width="200" height="40">
+			<control type="image">
+				<width>200</width>
+				<height>38</height>
+				<align>center</align>
+				<aligny>center</aligny>
+				<visible>Control.HasFocus(100)</visible>
+				<texture border="20">button_option_menu_on.png</texture>
+			</control>
+			<control type="label">
+				<posx>10</posx>
+				<width>200</width>
+				<height>38</height>
+				<font>font21</font>
+				<align>left</align>
+				<aligny>center</aligny>
+				<label>$INFO[ListItem.Label]</label>
+				<info>ListItem.Label</info>
+				<textcolor>white</textcolor>
+			</control>
+		</focusedlayout>
+		<content type="action">
+			<onclick lang="python"><![CDATA[exc.OnSectionSelected()]]></onclick>
+		</content>
+	</control>
+	<control type="list" id="500">
+		<description>Navigation history container</description>
+		<posx>255</posx>
+		<posy>88</posy>
+		<width>800</width>
+		<height>40</height>
+		<onup>-</onup>
+		<ondown>-</ondown>
+		<onleft>-</onleft>
+		<onright>-</onright>
+		<orientation>horizontal</orientation>
+		<itemlayout width="800" height="40">
+			<control type="label">
+				<posx>0</posx>
+				<width>600</width>
+				<height>40</height>
+				<font>font28b</font>
+				<align>left</align>
+				<aligny>center</aligny>
+				<label>$INFO[ListItem.Label]</label>
+				<info>ListItem.Label</info>
+				<textcolor>title</textcolor>
+				<scroll>true</scroll>
+				<wrapmultiline>false</wrapmultiline>
+			</control>
+			<control type="label">
+				<posx>680</posx>
+				<width>200</width>
+				<height>40</height>
+				<align>right</align>
+				<aligny>center</aligny>
+				<scroll>false</scroll>
+				<number></number>
+				<font>font28b</font>
+				<textcolor>title</textcolor>
+				<wrapmultiline>false</wrapmultiline>
+				<label>[UPPERCASE]$INFO[ListItem.Title][/UPPERCASE]</label>
+				<info>ListItem.Title</info>
+			</control>
+		</itemlayout>
+		<focusedlayout width="800" height="40">
+			<control type="label">
+				<posx>0</posx>
+				<width>600</width>
+				<height>40</height>
+				<font>font28b</font>
+				<align>left</align>
+				<aligny>center</aligny>
+				<label>$INFO[ListItem.Label]</label>
+				<info>ListItem.Label</info>
+				<textcolor>title</textcolor>
+				<wrapmultiline>false</wrapmultiline>
+			</control>
+			<control type="label">
+				<posx>680</posx>
+				<width>200</width>
+				<height>40</height>
+				<align>right</align>
+				<aligny>center</aligny>
+				<scroll>false</scroll>
+				<number></number>
+				<haspath>false</haspath>
+				<font>font28b</font>
+				<textcolor>title</textcolor>
+				<wrapmultiline>false</wrapmultiline>
+				<label>[UPPERCASE]$INFO[ListItem.Title][/UPPERCASE]</label>
+				<info>ListItem.Title</info>
+			</control>
+		</focusedlayout>
+		<content type="action">
+			<onclick lang="python"><![CDATA[]]></onclick>
+		</content>
+	</control>
+	<control type="group">
+		<posx>195</posx>
+		<posy>0</posy>
+		<animation type="Conditional" condition="Window.IsVisible(DialogProgress.xml)">
+			<effect type="fade" start="100" end="20" time="200"/>
+		</animation>
+		<control type="panel" id="200">
+			<enable>true</enable>
+			<animation type="ListLoad">
+				<effect type="fade" start="50" end="100" time="200" deltax="0" deltay="0"/>
+				<!--effect type="slide" start="20,0" end="0,0" time="300" deltax="30" deltay="20"/-->
+			</animation>
+			<posx>46</posx>
+			<posy>136</posy>
+			<width>760</width>
+			<height>575</height>
+			<onleft>100</onleft>
+			<onright>320</onright>
+			<onup>310</onup>
+			<ondown>-</ondown>
+			<scrolltime>400</scrolltime>
+			<orientation>vertical</orientation>
+			<itemlayout height="192" width="144">
+				<control type="image">
+					<visible>!IsEmpty(ListItem.Thumb)</visible>
+					<animation effect="fade" end="80" time="0" condition="true">Conditional</animation>
+					<posx>0</posx>
+					<posy>0</posy>
+					<width>144</width>
+					<height>192</height>
+					<bordertexture border="12">masks/thumb_background.png</bordertexture>
+					<bordersize>12</bordersize>
+					<texture blend="false">$INFO[ListItem.Thumb]</texture>
+					<aspectratio scalediffuse="false">scale</aspectratio>
+					<fadetime>200</fadetime>
+				</control>
+				<control type="image">
+					<visible>IsEmpty(ListItem.Thumb)</visible>
+					<animation effect="fade" end="80" time="0" condition="true">Conditional</animation>
+					<posx>0</posx>
+					<posy>0</posy>
+					<width>144</width>
+					<height>192</height>
+					<bordertexture border="12">masks/thumb_background.png</bordertexture>
+					<bordersize>12</bordersize>
+					<texture>black.png</texture>
+					<fadetime>200</fadetime>
+				</control>
+				<control type="label">
+					<visible>IsEmpty(ListItem.Thumb)</visible>
+					<animation effect="fade" end="80" time="0" condition="true">Conditional</animation>
+					<posx>72</posx>
+					<posy>28</posy>
+					<width>108</width>
+					<height>136</height>
+					<label>[UPPERCASE]$INFO[ListItem.label][/UPPERCASE]</label>
+					<font>font18b</font>
+					<align>center</align>
+					<aligny>top</aligny>
+					<textcolor>blue</textcolor>
+					<wrapmultiline>true</wrapmultiline>
+				</control>
+			</itemlayout>
+			<focusedlayout height="192" width="144">
+				<control type="group">
+					<visible>!Control.HasFocus(200)</visible>
+					<control type="image">
+						<visible>!IsEmpty(ListItem.Thumb)</visible>
+						<animation effect="fade" end="80" time="0" condition="true">Conditional</animation>
+						<posx>0</posx>
+						<posy>0</posy>
+						<width>144</width>
+						<height>192</height>
+						<bordertexture border="12">masks/thumb_background.png</bordertexture>
+						<bordersize>12</bordersize>
+						<texture blend="false">$INFO[ListItem.Thumb]</texture>
+						<aspectratio scalediffuse="false">scale</aspectratio>
+						<fadetime>200</fadetime>
+					</control>
+					<control type="image">
+						<visible>IsEmpty(ListItem.Thumb)</visible>
+						<animation effect="fade" end="80" time="0" condition="true">Conditional</animation>
+						<posx>0</posx>
+						<posy>0</posy>
+						<width>144</width>
+						<height>192</height>
+						<bordertexture border="12">masks/thumb_background.png</bordertexture>
+						<bordersize>12</bordersize>
+						<texture>black.png</texture>
+						<fadetime>200</fadetime>
+					</control>
+					<control type="label">
+						<visible>IsEmpty(ListItem.Thumb)</visible>
+						<animation effect="fade" end="80" time="0" condition="true">Conditional</animation>
+						<posx>72</posx>
+						<posy>28</posy>
+						<width>108</width>
+						<height>136</height>
+						<label>[UPPERCASE]$INFO[ListItem.label][/UPPERCASE]</label>
+						<font>font18b</font>
+						<align>center</align>
+						<aligny>top</aligny>
+						<textcolor>blue</textcolor>
+						<wrapmultiline>true</wrapmultiline>
+					</control>
+				</control>
+				<control type="group">
+					<visible>Control.HasFocus(200)</visible>
+					<control type="image">
+						<visible>!IsEmpty(ListItem.Thumb)</visible>
+						<animation type="Focus">
+							<effect type="fade" start="80" end="100" time="100" delay="0"/>
+							<effect type="zoom" start="100,100" end="110,110" time="200" delay="0" center="auto" tween="cubic" easing="out"/>
+						</animation>
+						<posx>-8</posx>
+						<posy>-8</posy>
+						<width>160</width>
+						<height>208</height>
+						<bordertexture border="20">masks/thumb_back_on.png</bordertexture>
+						<bordersize>20</bordersize>
+						<texture blend="false">$INFO[ListItem.Thumb]</texture>
+						<aspectratio scalediffuse="false">scale</aspectratio>
+						<fadetime>200</fadetime>
+					</control>
+					<control type="image">
+						<visible>IsEmpty(ListItem.Thumb)</visible>
+						<animation type="Focus">
+							<effect type="fade" start="80" end="100" time="100" delay="0"/>
+							<effect type="zoom" start="100,100" end="110,110" time="200" delay="0" center="auto" tween="cubic" easing="out"/>
+						</animation>
+						<posx>-8</posx>
+						<posy>-8</posy>
+						<width>160</width>
+						<height>208</height>
+						<bordertexture border="20">masks/thumb_back_on.png</bordertexture>
+						<bordersize>20</bordersize>
+						<texture>black.png</texture>
+						<fadetime>200</fadetime>
+					</control>
+					<control type="label">
+						<animation type="Focus">
+							<effect type="fade" start="80" end="100" time="100" delay="0"/>
+							<effect type="zoom" start="100,100" end="110,110" time="200" delay="0" center="72,96" tween="cubic" easing="out"/>
+						</animation>
+						<visible>IsEmpty(ListItem.Thumb)</visible>
+						<posx>72</posx>
+						<posy>28</posy>
+						<width>108</width>
+						<height>136</height>
+						<label>[UPPERCASE]$INFO[ListItem.label][/UPPERCASE]</label>
+						<font>font18b</font>
+						<align>center</align>
+						<aligny>top</aligny>
+						<textcolor>white</textcolor>
+						<wrapmultiline>true</wrapmultiline>
+					</control>
+				</control>
+			</focusedlayout>
+			<content type="action">
+				<onclick lang="python"><![CDATA[exc.OnPageClick()]]></onclick>
+			</content>
+		</control>
+		<control type="group">
+			<control type="grouplist">
+				<visible>true</visible>
+				<animation effect="fade" start="0" end="100" time="200" tween="cubic" easing="inout" delay="50">Visible</animation>
+				<visible>Control.IsVisible(200)</visible>
+				<posx>790</posx>
+				<posy>152</posy>
+				<width>300</width>
+				<height>534</height>
+				<itemgap>8</itemgap>
+				<orientation>vertical</orientation>
+				<usecontrolcoords>false</usecontrolcoords>
+				<control type="label">
+					<width>250</width>
+					<height>290</height>
+					<font>font22b</font>
+					<align>left</align>
+					<aligny>top</aligny>
+					<textcolor>title</textcolor>
+					<wrapmultiline>true</wrapmultiline>
+					<label>[UPPERCASE]$INFO[container(200).ListItem.Label][/UPPERCASE]</label>
+				</control>
+			</control>
+		</control>
+	</control>
+	</controls>
+</window>
