@@ -1,8 +1,8 @@
 <app>
 	<id>com.ex-ua-boxee-tv.googlecode.fsuatv</id>
 	<name>FS.UA TV</name>
-	<version>0.1</version>
-	<description>FS.UA TV v0.1 Video library of FS.ua content streamed to big screen.</description>
+	<version>0.2</version>
+	<description>FS.UA TV v0.2 Video library of FS.ua content streamed to big screen.</description>
 	<thumb>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee/icon-fs.png</thumb>
 	<repository>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee</repository>
 	<repositoryid>com.ex-ua-boxee-tv.googlecode</repositoryid>
