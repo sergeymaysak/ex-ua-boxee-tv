@@ -225,11 +225,14 @@ class fsmodel:
 			plot = ''
 		
 		detailsString = ''
-		for pair in itemInfo.findAll('tr'):
-			right = ''
-			for r in pair.findAll('a'): right += r.string + ','
-			right = right.rstrip(',')
-			detailsString += pair.find('td').string.strip() + " " + right + "\n"
+		try:
+			for pair in itemInfo.findAll('tr'):
+				right = ''
+				for r in pair.findAll('a'): right += r.string + ','
+				right = right.rstrip(',')
+				detailsString += pair.find('td').string.strip() + " " + right + "\n"
+		except:
+			detailsString = ''
 		description = detailsString + '\n\n' + plot
 		return description.encode('utf-8')
 
@@ -238,7 +241,7 @@ class fsmodel:
 		if http == None: http = ''
 		beautifulSoup = BeautifulSoup(http)
 		mainItems = beautifulSoup.find('ul', 'filelist')
-		if mainItems == None:
+		if mainItems == None and 0 == int(folder):
 			http = self.GET(folderUrl + '?ajax&folder=', httpSiteUrl)
 			beautifulSoup = BeautifulSoup(http)
 			mainItems = beautifulSoup.find('ul', 'filelist')
@@ -276,8 +279,10 @@ class fsmodel:
 				if isFolder:
 					linkItem = item.find('a', 'title')
 				else:
-					linkItem = item.find('a', 'link-material')
-					playLink = item.find('a', 'b-player-link')
+					linkItem = item.find('a', 'b-file-new__link-material')#'link-material')
+					playLink = item.find('a', 'b-file-new__link-material-download')#'b-player-link')
+				#self.log("linkItem: %s" % linkItem)
+				#self.log("playLink: %s" % playLink)
 				
 				if linkItem is not None:
 					title = ""
@@ -287,7 +292,7 @@ class fsmodel:
 							title = str(linkItem.string)
 						else:
 							title = str(titleB.string)
-						quality = item.findAll('span', 'material-size')
+						quality = item.findAll('span', 'b-file-new__link-material-size')
 						if len(quality) > 1:
 							 title = title + " [" + str(quality[0].string) + "]"
 					else:
@@ -295,9 +300,11 @@ class fsmodel:
 
 					useFlv = False#__settings__.getSetting('Use flv files for playback') == 'true'
 					fallbackHref = linkItem['href']
-					if useFlv and playLink is not None:
+					#if useFlv and playLink is not None:
+					if playLink is not None:
 						try:
-							href = httpSiteUrl + str(playLink['href'])
+							#href = httpSiteUrl + str(playLink['href'])
+							href = str(playLink['href'])
 						except:
 							href = fallbackHref
 					else:
