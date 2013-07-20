@@ -21,8 +21,6 @@
 __author__="sam"
 __date__ ="$Jul 30, 2011 6:09:45 PM$"
 
-import mc
-
 import sys
 import os
 import urllib
@@ -30,15 +28,8 @@ import urllib2
 import cookielib
 import re
 import tempfile
+import exlocalizer
 from htmlentitydefs import name2codepoint
-
-class localizer:
-	'''localizer defines an abstract interface for obtaining localized strings.
-	Implementor is responsible to define th way to return localized test for input
-	text accourding to current user locale.'''
-	
-	def localizedString(self, text):
-		return text
 
 class exmodel:
 	'''exmodel acts as a data model provider performing loading data from ex.ua'''
@@ -61,7 +52,7 @@ class exmodel:
 		('&nbsp;', ' '),
 	)
 
-	def __init__(self, localizer, useGate = False):
+	def __init__(self, localizer = None, useGate = False):
 		self.localizer = localizer
 		if useGate:
 			self.URL = 'http://fex.net'
@@ -69,9 +60,17 @@ class exmodel:
 			self.URL = 'http://www.ex.ua'
 
 	# Private methods
-	
+	def log(self, text):
+		try:
+			import mc
+			mc.LogInfo(text)
+		except:
+			print text
+
 	def localizedString(self, text):
-		return self.localizer.localizedString(text)
+		if None != self.localizer:
+			return self.localizer.localizedString(text)
+		return text
 
 	def unescape(self, string):
 		for (symbol, code) in self.htmlCodes:
@@ -85,7 +84,7 @@ class exmodel:
 
 	def fetchData(self, url):
 		try:
-			mc.LogInfo("Fetching data for url: %s" % url)
+			self.log("Fetching data for url: %s" % url)
 			request = urllib2.Request(url)
 			request.add_header('User-Agent', self.USERAGENT)
 			#if self.__settings__.getSetting("auth"):
@@ -99,7 +98,7 @@ class exmodel:
 			connection.close()
 			return (result)
 		except urllib2.HTTPError, e:
-			mc.LogInfo(self + " fetchData(" + url + ") exception: " + str(e))
+			self.log(self + " fetchData(" + url + ") exception: " + str(e))
 			return
 
 	def nextPageItem(self, videos):
@@ -111,14 +110,13 @@ class exmodel:
 		nextPageItem = {}
 		if next:
 			nextPageItem = {"name": self.localizedString("Next") + ' >>', "path": self.URL + next.group(1), "image": ''}
-			mc.LogInfo("next found: %s" % nextPageItem["path"])
+			self.log("next found: %s" % nextPageItem["path"])
 		return nextPageItem
 
 	def sectionsList(self):
 		'''Returns a list of available video sections'''
 		sectionsList = list()
 		sections = self.fetchData("%s/%s/video" % (self.URL, self.LANGUAGE))
-		#for (link, sectionName, count) in re.compile("<a href='(/view/.+?)'><b>(.+?)</b></a><p><a href='/view/.+?' class=info>.+?: (\d+)</a>").findall(sections):
 		for (link, sectionName, count) in re.compile("<a href='(.+?)'><b>(.+?)</b></a><p><a href='.+?' class=info>.+?: (\d+)</a>").findall(sections):
 			sectionsList.append({"name": sectionName, "path": str(self.URL + link)})
 		#move megogo.net to the end
@@ -137,12 +135,7 @@ class exmodel:
 		videos = self.fetchData(url)
 		# fill pages list
 		pagesList = []
-		for (image, link, title, comments) in re.compile(">(.+?)?<a href='(/view[\w\d\?=&/_,]+)'><b>(.+?)</b>.+?</small><p>(.*?)&nbsp;").findall(videos):
-			image = re.compile("<img src='(.+?)\?\d+'.+?></a><p>").search(image)
-			if image:
-				image = image.group(1)
-			else:
-				image = ''
+		for (link, image, title, comments) in re.compile(">?<a href='([^><']+?)'><img src='([^><']+?)\?\d+?' .+? alt='(.+?)'></a>.+?</small><p>(.*?)&nbsp;").findall(videos):
 			if comments:
 				comments = " [%s]" % re.sub('.+?>(.+?)</a>', '\g<1>', comments)
 			pagesList.append({"name": self.unescape(title + comments), "path": self.URL + link, "image": image + '?200'})
@@ -157,12 +150,12 @@ class exmodel:
 			pagesList.append(nextPageItem)
 			pagesDict["next"] = nextPageItem
 		# detect seach context
-		mc.LogInfo("search for context in url %s" % url)
+		self.log("search for context in url %s" % url)
 		#context = re.search("(\d+)", url)
 		context = re.compile("<input type=hidden name=original_id value='(\d+)'>").search(videos)
 		if None != context:
 			pagesDict["search"]= context.group(1)
-			mc.LogInfo("search context is %s" % context.group(1))
+			self.log("search context is %s" % context.group(1))
 		return pagesDict
 
 	def playItemsList(self, playlist, content):
@@ -218,12 +211,7 @@ class exmodel:
 		'''Returns a dictionary with list of items containing search results and corresponding metadata'''
 		videos = self.fetchData(url)
 		pagesList = []
-		for (image, link, title, comments) in re.compile(">(.+?)?<a href='(/view[\w\d\?=&/_,]+)'><b>(.+?)</b>(.+?)</td>", re.DOTALL).findall(videos):
-			image = re.compile("<img src='(.+?)\?\d+'.+?></a>").search(image)
-			if image:
-				image = image.group(1)
-			else:
-				image = ''
+		for (link, image, title, comments) in re.compile(">?<a href='([^><']+?)'><img src='([^><']+?)\?\d+?' .+? alt='(.+?)'></a>.+?</small>.*?>(.+?)</td>", re.DOTALL).findall(videos):
 			comments = re.search("<a href='/view_comments.+?>(.+?)</a>", comments)
 			if comments:
 				title = "%s [%s]" % (title, comments.group(1))

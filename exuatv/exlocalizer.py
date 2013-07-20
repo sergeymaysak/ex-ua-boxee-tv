@@ -21,10 +21,6 @@
 __author__="sam"
 __date__ ="$Aug 27, 2011 23:25:46 PM$"
 
-import mc
-import exmodel
-import xbmc
-
 exSharedLocalizer = None #holds the global localizer object
 
 '''
@@ -37,7 +33,7 @@ actual string to be localized instead of integer id that is hard to manage and
 read in code.
 Principal method is localizedString.
 '''
-class exlocalizer(exmodel.localizer):
+class exlocalizer:
 	LOCALIZATIONS = {
 		'Russian': {
 			'[B]Comments[/B]\n\n': '[B]Комментарии[/B]\n\n',
@@ -53,8 +49,13 @@ class exlocalizer(exmodel.localizer):
 	}
 
 	def __init__(self):
-		self.language = xbmc.getLanguage()
-		mc.LogInfo("Current language: %s" % self.language)
+		try:
+			import mc
+			import xbmc
+			self.language = xbmc.getLanguage()
+			mc.LogInfo("Current language: %s" % self.language)
+		except:
+			pass
 
 	def localizedString(self, text):
 		try:

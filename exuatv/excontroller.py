@@ -37,10 +37,14 @@ class excontroller(exPlayer.exPlayerEventListener):
 	SEARCH_ID = 320
 
 	def __init__(self):
-		self.exmodel = exmodel.exmodel(exlocalizer.GetSharedLocalizer())
+		self.localizer = exlocalizer.GetSharedLocalizer()
+		self.model = exmodel.exmodel(self.localizer)
 		self.historyModel = exRecentlyViewedModel.exRecentlyViewedModel()
 		exPlayer.GetPlayer().listener = self
-		
+	
+	def localizedString(self, text):
+		return self.localizer.localizedString(text)
+	
 	def SavePagesFocusedItem(self):
 		currentNavItem = self.GetListFocusedItem(self.GetNavigationContainer())
 		currentNavItem.SetProperty("pagesFocusedIndex", str(self.GetPagesPanel().GetFocusedItem()))
@@ -272,10 +276,10 @@ class excontroller(exPlayer.exPlayerEventListener):
 
 	def LoadSectionsList(self, loadAttempt = 1):
 		mc.ShowDialogWait()
-		sectionsList = self.exmodel.sectionsList()
+		sectionsList = self.model.sectionsList()
 		if 0 == len(sectionsList) and loadAttempt < 3:
 			mc.HideDialogWait()
-			self.exmodel = exmodel.exmodel(exlocalizer.exlocalizer(), True)
+			self.model = exmodel.exmodel(self.localizer, True)
 			sectionsList = self.LoadSectionsList(loadAttempt + 1)
 		mc.HideDialogWait()
 		return sectionsList
@@ -293,8 +297,8 @@ class excontroller(exPlayer.exPlayerEventListener):
 			sectionsMenu = mc.ListItems()
 			sectionsList = self.LoadSectionsList()
 			if 0 == len(sectionsList):
-				mc.LogInfo("Failed to load data from url: %s" % self.exmodel.URL)
-				mc.ShowDialogOk(self.exmodel.localizedString("No access to www.ex.ua and fex.net"), self.exmodel.localizedString("Please make sure you have proxy disabled and check access to www.ex.ua or fex.net in internet browser"))
+				mc.LogInfo("Failed to load data from url: %s" % self.model.URL)
+				mc.ShowDialogOk(self.localizedString("No access to www.ex.ua and fex.net"), self.localizedString("Please make sure you have proxy disabled and check access to www.ex.ua or fex.net in internet browser"))
 				mc.GetApp().Close()
 				return
 			mc.ShowDialogWait()
@@ -326,9 +330,9 @@ class excontroller(exPlayer.exPlayerEventListener):
 		mc.LogInfo("url to load: %s" % url)
 		mc.ShowDialogWait()
 		if listItem.GetProperty("isSearch"):
-			pagesDict = self.exmodel.searchPagesDict(url)
+			pagesDict = self.model.searchPagesDict(url)
 		else:
-			pagesDict = self.exmodel.pagesDict(url)
+			pagesDict = self.model.pagesDict(url)
 		listItems = self.BuildPanelItemsList(pagesDict)
 		currentNavItem, nextNavItem = self.BuildCurrentAndNextItemsForLoadedPagesDict(listItem, pagesDict)
 		if pushState is True:
@@ -344,14 +348,14 @@ class excontroller(exPlayer.exPlayerEventListener):
 		query = mc.ShowDialogKeyboard(mc.GetLocalizedString(137) + " EX.UA", "", False)
 		if 0 != len(query):
 			mc.LogInfo("string to search: %s" % query)
-			pagesDict = self.exmodel.searchAllPagesDict(query)
+			pagesDict = self.model.searchAllPagesDict(query)
 			self.UpdatePagesPanelWithSearchResults(query, pagesDict)
 
 	def OnSearchInActiveSection(self):
 		if self.GetNavSearchContext():
 			query = mc.ShowDialogKeyboard(mc.GetLocalizedString(137) + " " + mc.GetLocalizedString(1405) + " " + self.GetNavSectionName(), "", False)
 			if 0 != len(query):
-				pagesDict = self.exmodel.searchInSectionPagesDict(self.GetNavSearchContext(), query)
+				pagesDict = self.model.searchInSectionPagesDict(self.GetNavSearchContext(), query)
 				self.UpdatePagesPanelWithSearchResults(query, pagesDict)
 		else:
 			mc.LogInfo("No search context present - unable to perform search in active section")
@@ -371,7 +375,7 @@ class excontroller(exPlayer.exPlayerEventListener):
 	def OnRecentlyViewed(self):
 		if not self.IsRecentlyViewedActive():
 			listItem = mc.ListItem(mc.ListItem.MEDIA_VIDEO_CLIP)
-			listItem.SetLabel(self.exmodel.localizedString("Recently Viewed"))
+			listItem.SetLabel(self.localizedString("Recently Viewed"))
 			listItem.SetPath("history://")
 			self.SaveWindowState()
 			self.StartNavNewSection(listItem.GetLabel(), listItem, None)
@@ -452,7 +456,7 @@ class excontroller(exPlayer.exPlayerEventListener):
 		self.SaveSectionsFocusedItem()
 		url = focusedItem.GetPath()
 		mc.ShowDialogWait()
-		playDict = self.exmodel.pagePlaylistDict({"url": url})
+		playDict = self.model.pagePlaylistDict({"url": url})
 		mc.HideDialogWait()
 		if playDict.has_key("playitems"):
 			self.RunPlayerForItemsFromDict(focusedItem, playDict)
