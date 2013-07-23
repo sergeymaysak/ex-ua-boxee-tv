@@ -306,7 +306,7 @@ class excontroller(exPlayer.exPlayerEventListener):
 			sectionsList = self.LoadSectionsList()
 			if 0 == len(sectionsList):
 				mc.LogInfo("Failed to load data from url: %s" % self.model.URL)
-				mc.ShowDialogOk(self.localizedString("No access to www.ex.ua and fex.net"), self.localizedString("Please make sure you have proxy disabled and check access to www.ex.ua or fex.net in internet browser"))
+				mc.ShowDialogOk(self.localizedString("No access to www.fs.ua"), self.localizedString("Please make sure you have proxy disabled and check access to www.fs.ua in your internet browser"))
 				mc.GetApp().Close()
 				return
 			mc.ShowDialogWait()

@@ -202,7 +202,7 @@ class fsmodel:
 		nextPageItem = {}
 		if nextPageLink != None:
 			nextPageItem = { 'name' : self.localizedString('Next') + ' >>',
-				'path': (httpSiteUrl + nextPageLink['href']).encode('utf-8'), 'image' : ''}
+				'path': (httpSiteUrl + nextPageLink['href']).encode('utf-8'), 'image' : '', 'folder': '0'}
 			pages.append(nextPageItem)
 		pagesDict = { 'pages' : pages, 'url' : params['path'], 'paging' : paging,
 			'search' : params['cleanUrl'] }
@@ -241,6 +241,7 @@ class fsmodel:
 		if http == None: http = ''
 		beautifulSoup = BeautifulSoup(http)
 		mainItems = beautifulSoup.find('ul', 'filelist')
+		#self.log('folder parametes is: %s' % folder)
 		if mainItems == None and 0 == int(folder):
 			http = self.GET(folderUrl + '?ajax&folder=', httpSiteUrl)
 			beautifulSoup = BeautifulSoup(http)
@@ -252,6 +253,7 @@ class fsmodel:
 		folderUrl = urllib.unquote_plus(params['path'])
 		cover = urllib.unquote_plus(params['image'])
 		folder = params['folder']
+		if False == folder.isdigit(): folder = '0'
 		
 		playlistDict['image'] = cover
 		playlistDict['title'] = params['name']
@@ -260,7 +262,6 @@ class fsmodel:
 		mainItems = self.loadFilelistItems(folderUrl, httpSiteUrl, folder)
 		if mainItems == None:
 			self.log('no filelist element found - returning...')
-			#playlistDict['playitems'] = []
 			return playlistDict
 
 		items = mainItems.findAll('li')
@@ -276,6 +277,7 @@ class fsmodel:
 				isFolder = item['class'] == 'folder'
 				linkItem = None
 				playLink = None
+				episodeName = None
 				if isFolder:
 					linkItem = item.find('a', 'title')
 				else:
@@ -283,6 +285,7 @@ class fsmodel:
 					playLink = item.find('a', 'b-file-new__link-material-download')#'b-player-link')
 				#self.log("linkItem: %s" % linkItem)
 				#self.log("playLink: %s" % playLink)
+				#self.log("episodeName: %s" % episodeName)
 				
 				if linkItem is not None:
 					title = ""
@@ -292,19 +295,23 @@ class fsmodel:
 							title = str(linkItem.string)
 						else:
 							title = str(titleB.string)
-						quality = item.findAll('span', 'b-file-new__link-material-size')
+						quality = item.findAll('span', 'material-size')
 						if len(quality) > 1:
 							 title = title + " [" + str(quality[0].string) + "]"
 					else:
-						title = str(linkItem.find('span').string)
+						episodeName = linkItem.find('span', 'b-file-new__link-material-filename-text')
+						#self.log("lets use episodeName: %s" % episodeName)
+						if episodeName is not None:
+							title = episodeName.string
+						
 
 					useFlv = False#__settings__.getSetting('Use flv files for playback') == 'true'
-					fallbackHref = linkItem['href']
+					fallbackHref = httpSiteUrl + linkItem['href']
 					#if useFlv and playLink is not None:
 					if playLink is not None:
 						try:
-							#href = httpSiteUrl + str(playLink['href'])
-							href = str(playLink['href'])
+							href = httpSiteUrl + str(playLink['href'])
+							#href = str(playLink['href'])
 						except:
 							href = fallbackHref
 					else:
@@ -398,7 +405,7 @@ class fsmodel:
 			if nextPageLink != None:
 				nextPageItem = { 'name' : self.localizedString('Next') + ' >>',
 					'path' : (httpSiteUrl + nextPageLink['href']).encode('utf-8'),
-					'image' : '', 'isSearch' : True }
+					'image' : '', 'isSearch' : True, 'folder': '0' }
 				pages.append(nextPageItem)
 				
 		pagesDict = { 'pages' : pages, 'url' : searchUrl, 'paging' : paging }
