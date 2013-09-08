@@ -29,7 +29,7 @@ from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup
 import socket
 socket.setdefaulttimeout(50)
 
-siteUrl = 'fs.ua'
+siteUrl = 'fs.to'
 httpSiteUrl = 'http://' + siteUrl
 
 headers  = {
@@ -359,7 +359,7 @@ class fsmodel:
 
 	def searchAllPagesDict(self, query):
 		'''Returns a dictionary with search results of 'search everywhere' '''
-		return self.searchInSectionPagesDict('http://fs.ua/video/', query)
+		return self.searchInSectionPagesDict('http://fs.to/video/', query)
 
 	def searchInSectionPagesDict(self, cleanUrl, query):
 		'''Returns a dictionary with search results of 'search in specific section' '''

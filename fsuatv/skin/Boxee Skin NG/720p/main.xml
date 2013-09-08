@@ -54,7 +54,7 @@ exc.OnMainWindowLoad()
 			<textcolor>white</textcolor>
 			<shadowcolor>grey</shadowcolor>
 			<wrapmultiline>false</wrapmultiline>
-			<label>FS.UA TV</label>
+			<label>FS.TO TV</label>
 		</control>
 		<control type="label">
 			<posx>1220</posx>
@@ -63,7 +63,7 @@ exc.OnMainWindowLoad()
 			<height>20</height>
 			<font>font14</font>
 			<textcolor>40FFFFFF</textcolor>
-			<label>v0.22</label>
+			<label>v0.23</label>
 		</control>
 	</control>
 	<control type="grouplist">

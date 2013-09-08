@@ -306,7 +306,7 @@ class excontroller(exPlayer.exPlayerEventListener):
 			sectionsList = self.LoadSectionsList()
 			if 0 == len(sectionsList):
 				mc.LogInfo("Failed to load data from url: %s" % self.model.URL)
-				mc.ShowDialogOk(self.localizedString("No access to www.fs.ua"), self.localizedString("Please make sure you have proxy disabled and check access to www.fs.ua in your internet browser"))
+				mc.ShowDialogOk(self.localizedString("No access to www.fs.to"), self.localizedString("Please make sure you have proxy disabled and check access to www.fs.ua in your internet browser"))
 				mc.GetApp().Close()
 				return
 			mc.ShowDialogWait()
@@ -371,7 +371,7 @@ class excontroller(exPlayer.exPlayerEventListener):
 		mc.HideDialogWait()
 
 	def OnSearchEverywhere(self):
-		query = mc.ShowDialogKeyboard(mc.GetLocalizedString(137) + " FS.UA", "", False)
+		query = mc.ShowDialogKeyboard(mc.GetLocalizedString(137) + " FS.TO", "", False)
 		if 0 != len(query):
 			mc.LogInfo("string to search: %s" % query)
 			mc.ShowDialogWait()
@@ -440,7 +440,7 @@ class excontroller(exPlayer.exPlayerEventListener):
 		playItem.SetLabel(playDict["title"])
 		playItem.SetPath(item["path"])
 		playItem.SetAddToHistory(True)
-		playItem.SetProviderSource('www.fs.ua')
+		playItem.SetProviderSource('www.fs.to')
 		return playItem
 
 	def DoesItemPointToTrailer(self, itemDict):
