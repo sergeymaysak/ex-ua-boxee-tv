@@ -9,7 +9,23 @@ exc.OnMainWindowLoad()
 ]]>
 	</onload>
 	<controls>
-	<include>Common_Background</include>
+	<!--include>Common_Background</include-->
+	<control type="group">
+		<control type="group">
+			<visible>true</visible>
+			<control type="image">
+				<animation effect="fade" start="0" end="100" time="10000">VisibleChange</animation>
+				<description>background image</description>
+				<posx>0</posx>
+				<posy>0</posy>
+				<width>1280</width>
+				<height>720</height>
+				<aspectratio>scale</aspectratio>
+				<texture blend="false">big_trident.png</texture>
+			</control>
+		</control>
+	</control>
+	
 	<include>BrowseLoadingAnimation</include>
 	<control type="button" id="510">
 		<description>Navigation focus helper(private)</description>
@@ -54,7 +70,7 @@ exc.OnMainWindowLoad()
 			<height>20</height>
 			<font>font14</font>
 			<textcolor>40FFFFFF</textcolor>
-			<label>v0.58</label>
+			<label>v0.59</label>
 		</control>
 	</control>
 	<control type="grouplist">
