@@ -2,8 +2,8 @@
 	<app>
 		<id>com.ex-ua-boxee-tv.googlecode.exuatv</id>
 		<name>EX.UA TV</name>
-		<version>0.58</version>
-		<description>EX.UA TV v0.58 Streams video content from ex.ua to big screen.</description>
+		<version>0.59</version>
+		<description>EX.UA TV v0.59 Streams video content from ex.ua to big screen.</description>
 		<thumb>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee/icon.png</thumb>
 		<repository>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee</repository>
 		<media>video</media>
