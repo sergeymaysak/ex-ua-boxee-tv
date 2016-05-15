@@ -1,11 +1,11 @@
 <apps>
 	<app>
-		<id>com.ex-ua-boxee-tv.googlecode.exuatv</id>
+		<id>com.sergeymaysak.boxee.github.exuatv</id>
 		<name>EX.UA TV</name>
-		<version>0.59</version>
-		<description>EX.UA TV v0.59 Streams video content from ex.ua to big screen.</description>
-		<thumb>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee/icon.png</thumb>
-		<repository>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee</repository>
+		<version>0.60</version>
+		<description>EX.UA TV v0.60 Streams video content from ex.ua to big screen.</description>
+		<thumb>https://raw.githubusercontent.com/sergeymaysak/ex-ua-boxee-tv/master/boxee/icon.png</thumb>
+		<repository>https://raw.githubusercontent.com/sergeymaysak/ex-ua-boxee-tv/master/boxee</repository>
 		<media>video</media>
 		<author>sergey.maysak</author>
 		<copyright>sergey.maysak</copyright>
@@ -16,12 +16,12 @@
 		<minversion>0.9.20</minversion>
 	</app>
 	<app>
-		<id>com.ex-ua-boxee-tv.googlecode.fsuatv</id>
+		<id>com.sergeymaysak.boxee.github.fsuatv</id>
 		<name>FS.TO TV</name>
 		<version>0.23</version>
 		<description>FS.TO TV v0.23 Video library of FS.to content streamed to big screen.</description>
-		<thumb>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee/icon-fs.png</thumb>
-		<repository>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee</repository>
+		<thumb>https://raw.githubusercontent.com/sergeymaysak/ex-ua-boxee-tv/master/boxee/icon-fs.png</thumb>
+		<repository>https://raw.githubusercontent.com/sergeymaysak/ex-ua-boxee-tv/master/boxee</repository>
 		<media>video</media>
 		<author>sergey.maysak</author>
 		<copyright>sergey.maysak</copyright>

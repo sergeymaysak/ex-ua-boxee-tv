@@ -1,7 +1,7 @@
 <repository>
-	<id>com.ex-ua-boxee-tv.googlecode</id>
-	<url>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee/</url>
-	<name>The sam's repository for Boxee apps</name>
-	<thumb>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee/icon.png</thumb>
+	<id>com.sergeymaysak.boxee.github</id>
+	<url>https://raw.githubusercontent.com/sergeymaysak/ex-ua-boxee-tv/master/boxee/</url>
+	<name>Sergiy Maysak repository for Boxee apps</name>
+	<thumb>https://raw.githubusercontent.com/sergeymaysak/ex-ua-boxee-tv/master/boxee/icon.png</thumb>
 	<description>This repository contains Ukrainian video libraries applications for Boxee.</description>
 </repository>

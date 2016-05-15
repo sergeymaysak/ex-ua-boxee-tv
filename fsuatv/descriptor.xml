@@ -1,11 +1,11 @@
 <app>
-	<id>com.ex-ua-boxee-tv.googlecode.fsuatv</id>
+	<id>com.sergeymaysak.boxee.github.fsuatv</id>
 	<name>FS.TO TV</name>
-	<version>0.23</version>
-	<description>FS.TO TV v0.23 Video library of FS.TO content streamed to big screen.</description>
-	<thumb>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee/icon-fs.png</thumb>
-	<repository>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee</repository>
-	<repositoryid>com.ex-ua-boxee-tv.googlecode</repositoryid>
+	<version>0.24</version>
+	<description>FS.TO TV v0.24 Video library of FS.TO content streamed to big screen.</description>
+	<thumb>https://raw.githubusercontent.com/sergeymaysak/ex-ua-boxee-tv/master/boxee/icon-fs.png</thumb>
+	<repository>https://raw.githubusercontent.com/sergeymaysak/ex-ua-boxee-tv/master/boxee/</repository>
+	<repositoryid>com.sergeymaysak.boxee.github</repositoryid>
 	<media>video</media>
 	<copyright>sergey.maysak</copyright>
 	<email>sergey.maysak@gmail.com</email>

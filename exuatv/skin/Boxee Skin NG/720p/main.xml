@@ -70,7 +70,7 @@ exc.OnMainWindowLoad()
 			<height>20</height>
 			<font>font14</font>
 			<textcolor>40FFFFFF</textcolor>
-			<label>v0.59</label>
+			<label>v0.60</label>
 		</control>
 	</control>
 	<control type="grouplist">

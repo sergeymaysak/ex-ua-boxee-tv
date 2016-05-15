@@ -1,11 +1,11 @@
 <app>
-	<id>com.ex-ua-boxee-tv.googlecode.exuatv</id>
+	<id>com.sergeymaysak.boxee.github.exuatv</id>
 	<name>EX.UA TV</name>
-	<version>0.59</version>
-	<description>EX.UA TV v0.59 Access and plays ex.ua content from Boxee.</description>
-	<thumb>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee/icon.png</thumb>
-	<repository>http://ex-ua-boxee-tv.googlecode.com/svn/trunk/boxee</repository>
-	<repositoryid>com.ex-ua-boxee-tv.googlecode</repositoryid>
+	<version>0.60</version>
+	<description>EX.UA TV v0.60 Streams ex.ua content to Boxee.</description>
+	<thumb>https://raw.githubusercontent.com/sergeymaysak/ex-ua-boxee-tv/master/boxee/icon.png</thumb>
+	<repository>https://raw.githubusercontent.com/sergeymaysak/ex-ua-boxee-tv/master/boxee/</repository>
+	<repositoryid>com.sergeymaysak.boxee.github</repositoryid>
 	<media>video</media>
 	<copyright>sergey.maysak</copyright>
 	<email>sergey.maysak@gmail.com</email>
